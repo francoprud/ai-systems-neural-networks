@@ -26,7 +26,7 @@ function network = neural_network(trainingSet, minimumError, learningRate, func)
       W = W + deltaW;
     end
 
-    currentError = calculateError(W, trainingSet, func);
+    currentError = calculate_error(W, trainingSet, func);
   end
   network = W;
 end
@@ -34,7 +34,7 @@ end
 % W: array of weights
 % trainingSet: cell array. In {1} has matrix with the inputs. In {2} has expected result of inputs from {1}
 % func: activation function (logistic function/transference function)
-function err = calculateError(W, trainingSet, func)
+function err = calculate_error(W, trainingSet, func)
   totalInputs = rows(trainingSet{1});
   allInputs = [ones(totalInputs, 1).*(-1) trainingSet{1}];
   allOutputs = allInputs * W;

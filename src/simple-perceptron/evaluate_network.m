@@ -1,6 +1,7 @@
 % network: weights from training
 % input: array to test
-% func: activation function (logistic function/transference function)
-function output = evaluate_network(network, input, func)
-  output = func([-1 input] * network);
+% activation_func: activation function (logistic function/transference function)
+% activation_eval: evaluate the activation function result
+function output = evaluate_network(network, input, activation_func, activation_eval)
+  output = activation_eval(activation_func([-1 input] * network)); % Returns 0 or 1
 end
