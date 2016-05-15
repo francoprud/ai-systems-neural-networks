@@ -10,5 +10,5 @@ end
 
 % result: result from step_func
 function outputEval = step_eval(result)
-  outputEval = result >= 0;
+  outputEval = result;
 end

@@ -12,4 +12,9 @@ function output = test_network(func, minimumError, learningRate, activation_func
   networkWeights = neural_network(trainingSet, minimumError, learningRate, activation_func);
   randInput = inputs(randi(rows(inputs)), :)
   output = evaluate_network(networkWeights, randInput, activation_func, activation_eval);
+
+  % for i = 1:rows(inputs)
+  %   inp = inputs(i, :)
+  %   output = evaluate_network(networkWeights, inputs(i, :), activation_func, activation_eval)
+  % end
 end
