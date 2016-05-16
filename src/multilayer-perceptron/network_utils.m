@@ -14,11 +14,11 @@ function randomNetworkWeights = randomize_network_weights(layersAndSize)
 end
 
 function neuralValues = forward_propagation(inputs, networkWeights, activation_func, betha)
-  totalConnectionLayers = size(networkWeights)(2); % Total connections between layers
+  totalEdgesLayers = size(networkWeights)(2); % Total connections between layers
   totalInputs = rows(inputs);
   currentLayer = inputs;
 
-  for i = 1:totalConnectionLayers
+  for i = 1:totalEdgesLayers
     layer = [ones(totalInputs, 1).*(-1) currentLayer];
     V{i} = activation_func(layer * networkWeights{i}, betha); % Neurons biases including last layer
     currentLayer = V{i};
@@ -27,7 +27,7 @@ function neuralValues = forward_propagation(inputs, networkWeights, activation_f
   neuralValues = V;
 end
 
-function err = calculate_error(totalConnectionLayers, expectedOutputs, currentOutputs)
+function err = calculate_error(totalEdgesLayers, expectedOutputs, currentOutputs)
   differences = expectedOutputs - currentOutputs;
-  err = sum(differences.**2) / (2 * totalConnectionLayers);
+  err = sum(differences.**2) / (2 * totalEdgesLayers);
 end

@@ -12,6 +12,7 @@ function output = multilayer_perceptron_incremental(trainingSet, layersAndSize, 
   totalOutputs = rows(trainingSet{2});
   inputSize = columns(trainingSet{1});
   totalLayers = columns(layersAndSize) + 1; % All layers including entrance and output layers
+  totalEdgesLayers = columns(layersAndSize); % Total amount of edges "spaces"
 
   if (totalInputs != totalOutputs)
     printf('The training set is invalid.\n');
@@ -20,7 +21,7 @@ function output = multilayer_perceptron_incremental(trainingSet, layersAndSize, 
 
   networkWeights = network_utils.randomize_network_weights([inputSize layersAndSize]);
   V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha); % Contains the biases of hidden layers and output layers
-  currentError = network_utils.calculate_error(totalLayers - 1, trainingSet{2}, V{totalLayers - 1});
+  currentError = network_utils.calculate_error(totalEdgesLayers, trainingSet{2}, V{totalEdgesLayers});
 
   while (currentError > minimumError)
     inputsOrder = randperm(totalInputs); % Randomize the order of inputs
@@ -30,23 +31,22 @@ function output = multilayer_perceptron_incremental(trainingSet, layersAndSize, 
       currentInput = trainingSet{1}(currentIndex, :);
       V = network_utils.forward_propagation(currentInput, networkWeights, activation_func, betha);
 
-      outputLayerIndex = totalLayers - 1;
+      outputLayerIndex = totalEdgesLayers;
       currentExpecteOutput = trainingSet{2}(currentIndex, :);
       currentOutput = V{outputLayerIndex};
       difference = (currentExpecteOutput - currentOutput);
       delta{outputLayerIndex} = activation_func_derived(currentOutput, betha).*difference;
 
-      for j = (totalLayers - 1):-1:2
+      for j = (totalEdgesLayers):-1:2
         layers = networkWeights{j}(2 : end, :); % Remove -1 neuron to layers
-        delta{j - 1} = activation_func_derived(V{j - 1}, betha).*(delta{j} * layers');
+        delta{j - 1} = activation_func_derived(V{j - 1}, betha).*(layers * delta{j})';
         networkWeights{j} = networkWeights{j} + learingRate * [-1 V{j - 1}]' * delta{j};
       end
-
       networkWeights{1} = networkWeights{1} + learingRate * [-1 trainingSet{1}(currentIndex, :)]' * delta{1};
     end
 
     V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha);
-    currentError = network_utils.calculate_error(totalLayers - 1, trainingSet{2}, V{totalLayers -1});
+    currentError = network_utils.calculate_error(totalEdgesLayers, trainingSet{2}, V{totalLayers -1});
   end
 
   output = networkWeights;
