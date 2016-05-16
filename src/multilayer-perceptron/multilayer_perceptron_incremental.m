@@ -19,9 +19,8 @@ function output = multilayer_perceptron_incremental(trainingSet, layersAndSize, 
   end
 
   networkWeights = network_utils.randomize_network_weights([inputSize layersAndSize]);
-
-  V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha);
-  currentError = network_utils.calculate_error(totalLayers - 1, trainingSet{2}, V{totalLayers -1});
+  V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha); % Contains the biases of hidden layers and output layers
+  currentError = network_utils.calculate_error(totalLayers - 1, trainingSet{2}, V{totalLayers - 1});
 
   while (currentError > minimumError)
     inputsOrder = randperm(totalInputs); % Randomize the order of inputs
@@ -37,7 +36,7 @@ function output = multilayer_perceptron_incremental(trainingSet, layersAndSize, 
       difference = (currentExpecteOutput - currentOutput);
       delta{outputLayerIndex} = activation_func_derived(currentOutput, betha).*difference;
 
-      for j = totalLayers:-1:2
+      for j = (totalLayers - 1):-1:2
         layers = networkWeights{j}(2 : end, :); % Remove -1 neuron to layers
         delta{j - 1} = activation_func_derived(V{j - 1}, betha).*(delta{j} * layers');
         networkWeights{j} = networkWeights{j} + learingRate * [-1 V{j - 1}]' * delta{j};

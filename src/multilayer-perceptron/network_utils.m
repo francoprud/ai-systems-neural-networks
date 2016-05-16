@@ -6,7 +6,7 @@ end
 
 function randomNetworkWeights = randomize_network_weights(layersAndSize)
   for i = 1:(columns(layersAndSize) - 1)
-    firstNeuronsAmount = layersAndSize(i) + 1;
+    firstNeuronsAmount = layersAndSize(i) + 1; % Adds 1 neuron to layer
     lastNeuronsAmount = layersAndSize(i + 1);
 
     randomNetworkWeights{i} = rand(firstNeuronsAmount, lastNeuronsAmount).-0.5; % Randomize between [-0.5, 0.5]
