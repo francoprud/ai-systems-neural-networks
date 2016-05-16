@@ -1,5 +1,5 @@
 function testOutput = test_network(func, activationFunc, activationFuncDerived, minimumError, learningRate, betha)
-  inputs = [1 1 1; 1 0 1; 0 1 1; 0 0 1; 0 1 0; 1 0 0; 1 1 0; 0 0 0];
+  inputs = [0 0 0; 0 0 1; 0 1 0; 0 1 1; 1 0 0; 1 0 1; 1 1 0; 1 1 1];
   outputs = func(inputs);
   trainingSet{1} = inputs;
   trainingSet{2} = outputs;
