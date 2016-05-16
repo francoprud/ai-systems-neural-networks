@@ -24,14 +24,14 @@ function output = multilayer_perceptron_batch(trainingSet, layersAndSize, minimu
   currentError = network_utils.calculate_error(totalEdgesLayers, trainingSet{2}, V{totalEdgesLayers});
 
   while (currentError > minimumError)
-    delta{totalEdgesLayers} = activation_func_derived(V{totalEdgesLayers}, betha).*(trainingSet{2} - V{totalEdgesLayers})
+    delta{totalEdgesLayers} = activation_func_derived(V{totalEdgesLayers}, betha).*(trainingSet{2} - V{totalEdgesLayers});
 
     for j = totalEdgesLayers:-1:2
       layers = networkWeights{j}(2 : end, :); % Remove -1 neuron to layers
-      delta{j - 1} = activation_func_derived(V{j - 1}, betha).*(layers * delta{j}')';
+      delta{j - 1} = activation_func_derived(V{j - 1}, betha).*(delta{j} * layers');
       networkWeights{j} = networkWeights{j} + learingRate * [ones(totalInputs, 1).*(-1) V{j - 1}]' * delta{j};
     end
-    networkWeights{1} = networkWeights{1} + learingRate * [ones(totalInputs, 1).*(-1) trainingSet{1}(currentIndex, :)]' * delta{1};
+    networkWeights{1} = networkWeights{1} + learingRate * [ones(totalInputs, 1).*(-1) trainingSet{1}]' * delta{1};
 
     V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha);
     currentError = network_utils.calculate_error(totalEdgesLayers, trainingSet{2}, V{totalEdgesLayers});
