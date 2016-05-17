@@ -14,7 +14,7 @@ function randomNetworkWeights = randomize_network_weights(layersAndSize)
 end
 
 function neuralValues = forward_propagation(inputs, networkWeights, activation_func, betha)
-  totalEdgesLayers = size(networkWeights)(2); % Total connections between layers
+  totalEdgesLayers = columns(networkWeights); % Total connections between layers
   totalInputs = rows(inputs);
   currentLayer = inputs;
 

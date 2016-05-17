@@ -1,7 +1,7 @@
 function testOutput = test_network(func, N, activationFunc, activationFuncDerived, minimumError, learningRate, betha)
   trainingSet = utils.get_training_set(func, N);
 
-  layersAndSize = [3 1];
+  layersAndSize = [4 1];
 
   networkWeights = multilayer_perceptron_batch(trainingSet, layersAndSize, minimumError, learningRate, activationFunc, activationFuncDerived, betha);
   for i = 1:rows(trainingSet{1})
