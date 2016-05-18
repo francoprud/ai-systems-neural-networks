@@ -32,9 +32,9 @@ function output = multilayer_perceptron_incremental(trainingSet, layersAndSize, 
       V = network_utils.forward_propagation(currentInput, networkWeights, activation_func, betha);
 
       outputLayerIndex = totalEdgesLayers;
-      currentExpecteOutput = trainingSet{2}(currentIndex, :);
+      currentExpectedOutput = trainingSet{2}(currentIndex, :);
       currentOutput = V{outputLayerIndex};
-      difference = (currentExpecteOutput - currentOutput);
+      difference = (currentExpectedOutput - currentOutput);
       delta{outputLayerIndex} = activation_func_derived(currentOutput, betha).*difference;
 
       for j = (totalEdgesLayers):-1:2
