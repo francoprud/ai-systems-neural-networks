@@ -46,7 +46,8 @@ function output = multilayer_perceptron_incremental(trainingSet, layersAndSize, 
     end
 
     V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha);
-    currentError = network_utils.calculate_error(totalEdgesLayers, trainingSet{2}, V{totalLayers -1});
+    currentError = network_utils.calculate_error(totalEdgesLayers, trainingSet{2}, V{totalLayers -1})
+    fflush(stdout);
   end
 
   output = networkWeights;
