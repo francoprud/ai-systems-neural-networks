@@ -63,7 +63,7 @@ function plot_original_function(trainingSet, testingSet, sizeFactor)
   c = outputs; % Color relative to height
 
   scatter3(inputs(:,1), inputs(:,2), outputs, s, c, 'filled')
-  axis([-3 3.5 -3 3 -1.5 1.5]);
+  axis([-3 3.5 -3 3 -1.1 1.1]);
 end
 
 function plot_training_set(inputs, outputs, sizeFactor)
@@ -73,7 +73,7 @@ function plot_training_set(inputs, outputs, sizeFactor)
   c = outputs;
 
   scatter3(inputs(:,1), inputs(:,2), outputs, s, c, 'filled')
-  axis([-3 3.5 -3 3 -1.5 1.5]);
+  axis([-3 3.5 -3 3 -1.1 1.1]);
 end
 
 function plot_error_vs_epoch(epoch, deltaError, testError)
@@ -101,6 +101,7 @@ function plot_aproximated_function(networkWeights, trainingSet, testingSet, acti
   c = netOutputs; % Color relative to height
 
   scatter3(inputs(:,1), inputs(:,2), netOutputs, s, c, 'filled');
+  axis([-3 3.5 -3 3 -1.1 1.1]);
 end
 
 function output = normalize_x(A)

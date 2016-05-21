@@ -28,7 +28,7 @@ function withFunctionOutput = with_function(algorithm, improvement, layersAndSiz
 end
 
 function withTerrainOutput = with_terrain(filePath, algorithm, improvement, layersAndSize, activationFunc, activationFuncDerived, minimumError, learningRate, betha, alpha)
-  dataSets = utils.get_random_subset(load(filePath), 1);
+  dataSets = utils.get_random_subset(load(filePath), 0.3);
   trainingSet = dataSets{1};
   testingSet = dataSets{2};
   normalizeTrainingInput = utils.normalize_x(dataSets{1}{2});
