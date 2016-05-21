@@ -7,7 +7,7 @@
 % activation_func:
 % activation_func_derived:
 % betha:
-function output = multilayer_perceptron_incremental(trainingSet, testingSet, layersAndSize, minimumError, learingRate, activation_func, activation_func_derived, betha)
+function output = multilayer_perceptron_incremental_momentum(trainingSet, layersAndSize, minimumError, learingRate, activation_func, activation_func_derived, betha, alpha)
   totalInputs = rows(trainingSet{1});
   totalOutputs = rows(trainingSet{2});
   inputSize = columns(trainingSet{1});
@@ -19,11 +19,12 @@ function output = multilayer_perceptron_incremental(trainingSet, testingSet, lay
     return;
   end
 
-  sizeFactor = 15;
-  utils.plot_original_function(trainingSet, testingSet, sizeFactor);
-  drawnow;
-
   networkWeights = network_utils.randomize_network_weights([inputSize layersAndSize]);
+
+  for i = 1:columns(networkWeights)
+    previousDeltaWeight{i} = zeros(rows(networkWeights{i}), columns(networkWeights{i}));
+  end
+
   V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha); % Contains the biases of hidden layers and output layers
   currentError = network_utils.calculate_error(trainingSet{2}, V{totalEdgesLayers});
 
@@ -47,10 +48,12 @@ function output = multilayer_perceptron_incremental(trainingSet, testingSet, lay
       for j = (totalEdgesLayers):-1:2
         layers = networkWeights{j}(2 : end, :); % Remove -1 neuron to layers
         delta{j - 1} = activation_func_derived(V{j - 1}, betha).*(delta{j} * layers');
-        deltaWeight = learingRate * [-1 V{j - 1}]' * delta{j};
+        deltaWeight = learingRate * [-1 V{j - 1}]' * delta{j} + alpha * previousDeltaWeight{j};
+        previousDeltaWeight{j} = deltaWeight;
         networkWeights{j} = networkWeights{j} + deltaWeight;
       end
-      deltaWeight = learingRate * [-1 trainingSet{1}(currentIndex, :)]' * delta{1};
+      deltaWeight = learingRate * [-1 trainingSet{1}(currentIndex, :)]' * delta{1} + alpha * previousDeltaWeight{1};
+      previousDeltaWeight{1} = deltaWeight;
       networkWeights{1} = networkWeights{1} + deltaWeight;
     end
 
@@ -65,18 +68,7 @@ function output = multilayer_perceptron_incremental(trainingSet, testingSet, lay
 
     if (mod(epoch, 20) == 0)
       printf('epocas = %d; currentError = %g; currentMinimumError = %g\n', epoch, currentError, currentMinimumError);
-
-      utils.plot_training_set(trainingSet{1}, V{totalLayers-1}, sizeFactor)
-
-      testError = network_utils.get_test_error(networkWeights, testingSet, activation_func, betha);
-      utils.plot_error_vs_epoch(epoch, currentError, testError)
-
-      utils.plot_learning_rate_vs_epoch(epoch, learingRate);
-
-      utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalLayers, sizeFactor); % checkear totalLayers
-
       fflush(stdout);
-      drawnow;
     end
   end
 
