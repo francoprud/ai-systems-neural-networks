@@ -2,11 +2,15 @@
 function utils = utils()
   utils.get_training_set = @get_training_set;
   utils.get_random_subset = @get_random_subset;
+
   utils.plot_original_function = @plot_original_function;
   utils.plot_training_set = @plot_training_set;
   utils.plot_error_vs_epoch = @plot_error_vs_epoch;
-  utils.plot_learning_rate_vs_epoch = @plot_learning_rate_vs_epoch;  
-  utils.plot_aproximated_function = @plot_aproximated_function;  
+  utils.plot_learning_rate_vs_epoch = @plot_learning_rate_vs_epoch;
+  utils.plot_aproximated_function = @plot_aproximated_function;
+
+  utils.normalize_x = @normalize_x;
+  utils.denormalize_x = @denormalize_x;
 end
 
 function trainingSet = get_training_set(f, n)
@@ -62,7 +66,7 @@ function plot_original_function(trainingSet, testingSet, sizeFactor)
   axis([-3 3.5 -3 3 -1.5 1.5]);
 end
 
-function plot_training_set(inputs, outputs, sizeFactor) 
+function plot_training_set(inputs, outputs, sizeFactor)
   subplot(2,3,2);
 
   s = ones(length(outputs), 1) .* sizeFactor; %size
@@ -72,21 +76,21 @@ function plot_training_set(inputs, outputs, sizeFactor)
   axis([-3 3.5 -3 3 -1.5 1.5]);
 end
 
-function plot_error_vs_epoch(epoch, deltaError, testError) 
+function plot_error_vs_epoch(epoch, deltaError, testError)
   subplot(2,3,4)
   hold on;
 
   plot(epoch, deltaError, '.k', epoch, testError, '.r')
 end
 
-function plot_learning_rate_vs_epoch(epoch, learningRate) 
+function plot_learning_rate_vs_epoch(epoch, learningRate)
   subplot(2,3,5)
   hold on;
 
   plot(epoch, learningRate, '.k')
 end
 
-function plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalLayers, sizeFactor) 
+function plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalLayers, sizeFactor)
   subplot(2,3,3)
 
   inputs = [trainingSet{1} ; testingSet{1}];
@@ -97,4 +101,20 @@ function plot_aproximated_function(networkWeights, trainingSet, testingSet, acti
   c = netOutputs; % Color relative to height
 
   scatter3(inputs(:,1), inputs(:,2), netOutputs, s, c, 'filled');
+end
+
+function output = normalize_x(A)
+  maximum = max(A);
+  minimum = min(A);
+  range = maximum - minimum;
+  output{2}(1) = minimum + (range/2);
+  output{2}(2) = range/2;
+  output{1} = (A.-(output{2}(1)))./output{2}(2);
+end
+
+function denormalizedOutput = denormalize_x(A, B)
+  denormalizedOutput = A.*(B(2));
+  for i = 1:columns(A)
+    denormalizedOutput(i) = denormalizedOutput(i) + B(1);
+  end
 end
