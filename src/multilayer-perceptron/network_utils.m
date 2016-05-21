@@ -2,6 +2,7 @@ function networkUtils = network_utils()
   networkUtils.randomize_network_weights = @randomize_network_weights;
   networkUtils.forward_propagation = @forward_propagation;
   networkUtils.calculate_error = @calculate_error;
+  networkUtils.get_test_error = @get_test_error;
 end
 
 function randomNetworkWeights = randomize_network_weights(layersAndSize)
@@ -30,4 +31,11 @@ end
 function err = calculate_error(expectedOutputs, currentOutputs)
   differences = expectedOutputs - currentOutputs;
   err = sum(differences.**2) / (2 * rows(expectedOutputs));
+end
+
+function error = get_test_error(networkWeights, testingSet, activation_func, betha) 
+  expectedOutputs = testingSet{2};
+  outputs = forward_propagation(testingSet{1}, networkWeights, activation_func, betha);
+
+  error = 0.5 * sum((expectedOutputs - outputs{columns(outputs)}).^2) / rows(testingSet{1});
 end
