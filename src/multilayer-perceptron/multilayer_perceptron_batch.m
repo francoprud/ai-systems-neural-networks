@@ -22,7 +22,7 @@ function output = multilayer_perceptron_batch(trainingSet, layersAndSize, minimu
 
   networkWeights = network_utils.randomize_network_weights([inputSize layersAndSize]);
   V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha); % Contains the biases of hidden layers and output layers
-  currentError = network_utils.calculate_error(totalInputs, trainingSet{2}, V{totalEdgesLayers});
+  currentError = network_utils.calculate_error(trainingSet{2}, V{totalEdgesLayers});
 
   while (currentError > minimumError)
     delta{totalEdgesLayers} = activation_func_derived(V{totalEdgesLayers}, betha).*(trainingSet{2} - V{totalEdgesLayers});
@@ -35,7 +35,7 @@ function output = multilayer_perceptron_batch(trainingSet, layersAndSize, minimu
     networkWeights{1} = networkWeights{1} + learingRate * [ones(totalInputs, 1).*(-1) trainingSet{1}]' * delta{1};
 
     V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha);
-    currentError = network_utils.calculate_error(totalEdgesLayers, trainingSet{2}, V{totalEdgesLayers});
+    currentError = network_utils.calculate_error(trainingSet{2}, V{totalEdgesLayers});
 
     currentError
     fflush(stdout);

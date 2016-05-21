@@ -27,7 +27,7 @@ function neuralValues = forward_propagation(inputs, networkWeights, activation_f
   neuralValues = V;
 end
 
-function err = calculate_error(totalInputs, expectedOutputs, currentOutputs)
+function err = calculate_error(expectedOutputs, currentOutputs)
   differences = expectedOutputs - currentOutputs;
   err = sum(differences.**2) / (2 * rows(expectedOutputs));
 end
