@@ -23,6 +23,9 @@ function output = multilayer_perceptron_incremental(trainingSet, layersAndSize, 
   V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha); % Contains the biases of hidden layers and output layers
   currentError = network_utils.calculate_error(trainingSet{2}, V{totalEdgesLayers});
 
+  epoch = 0;
+  currentMinimumError = currentError;
+
   while (currentError > minimumError)
     inputsOrder = randperm(totalInputs); % Randomize the order of inputs
 
@@ -39,15 +42,25 @@ function output = multilayer_perceptron_incremental(trainingSet, layersAndSize, 
 
       for j = (totalEdgesLayers):-1:2
         layers = networkWeights{j}(2 : end, :); % Remove -1 neuron to layers
-        delta{j - 1} = activation_func_derived(V{j - 1}, betha).*(layers * delta{j})';
+        delta{j - 1} = activation_func_derived(V{j - 1}, betha).*(delta{j} * layers');
         networkWeights{j} = networkWeights{j} + learingRate * [-1 V{j - 1}]' * delta{j};
       end
       networkWeights{1} = networkWeights{1} + learingRate * [-1 trainingSet{1}(currentIndex, :)]' * delta{1};
     end
 
     V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha);
-    currentError = network_utils.calculate_error(trainingSet{2}, V{totalLayers -1})
-    fflush(stdout);
+    currentError = network_utils.calculate_error(trainingSet{2}, V{totalLayers -1});
+
+    if (currentError < currentMinimumError)
+      currentMinimumError = currentError;
+    end
+
+    epoch++;
+
+    if (mod(epoch, 20) == 0)
+      printf('epocas = %d; currentError = %g; currentMinimumError = %g\n', epoch, currentError, currentMinimumError);
+      fflush(stdout);
+    end
   end
 
   output = networkWeights;
