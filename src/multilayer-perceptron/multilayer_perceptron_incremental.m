@@ -63,5 +63,8 @@ function output = multilayer_perceptron_incremental(trainingSet, layersAndSize, 
     end
   end
 
+  printf('epocas = %d; currentError = %g; currentMinimumError = %g\n', epoch, currentError, currentMinimumError);
+  fflush(stdout);
+
   output = networkWeights;
 end
