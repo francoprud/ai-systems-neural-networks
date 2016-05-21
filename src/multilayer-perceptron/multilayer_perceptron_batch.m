@@ -13,7 +13,6 @@ function output = multilayer_perceptron_batch(trainingSet, layersAndSize, minimu
   inputSize = columns(trainingSet{1});
   totalLayers = columns(layersAndSize) + 1; % All layers including entrance and output layers
   totalEdgesLayers = columns(layersAndSize); % Total amount of edges "spaces"
-  step = 0;
 
   if (totalInputs != totalOutputs)
     printf('The training set is invalid.\n');
@@ -23,6 +22,9 @@ function output = multilayer_perceptron_batch(trainingSet, layersAndSize, minimu
   networkWeights = network_utils.randomize_network_weights([inputSize layersAndSize]);
   V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha); % Contains the biases of hidden layers and output layers
   currentError = network_utils.calculate_error(trainingSet{2}, V{totalEdgesLayers});
+
+  epoch = 0;
+  currentMinimumError = currentError;
 
   while (currentError > minimumError)
     delta{totalEdgesLayers} = activation_func_derived(V{totalEdgesLayers}, betha).*(trainingSet{2} - V{totalEdgesLayers});
@@ -37,10 +39,16 @@ function output = multilayer_perceptron_batch(trainingSet, layersAndSize, minimu
     V = network_utils.forward_propagation(trainingSet{1}, networkWeights, activation_func, betha);
     currentError = network_utils.calculate_error(trainingSet{2}, V{totalEdgesLayers});
 
-    currentError
-    fflush(stdout);
+    if (currentError < currentMinimumError)
+      currentMinimumError = currentError;
+    end
 
-    step++;
+    epoch++;
+
+    if (mod(epoch, 20) == 0)
+      printf('epocas = %d; currentError = %g; currentMinimumError = %g\n', epoch, currentError, currentMinimumError);
+      fflush(stdout);
+    end
   end
 
   output = networkWeights;
