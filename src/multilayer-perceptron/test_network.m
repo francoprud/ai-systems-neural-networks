@@ -19,7 +19,7 @@ function withFunctionOutput = with_function(algorithm, improvement, layersAndSiz
   testingSet{1} = [];
   testingSet{2} = [];
 
-  networkWeights = test_network.configurations{algorithm}{improvement}(trainingSet, testingSet, layersAndSize, minimumError, learningRate, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs, adaptativeA, adaptativeB, kEpochs);
+  networkWeights = test_network.configurations{algorithm}{improvement}(trainingSet, testingSet, false, 1, layersAndSize, minimumError, learningRate, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs, adaptativeA, adaptativeB, kEpochs);
 
   for i = 1:rows(trainingSet{1})
     V = network_utils.forward_propagation([trainingSet{1}(i, :)], networkWeights, activationFunc, betha);
@@ -28,14 +28,14 @@ function withFunctionOutput = with_function(algorithm, improvement, layersAndSiz
   end
 end
 
-function withTerrainOutput = with_terrain(filePath, testingPercentage, algorithm, improvement, layersAndSize, activationFunc, activationFuncDerived, minimumError, learningRate, betha, alpha, adaptativeA, adaptativeB, kEpochs)
-  dataSets = utils.get_random_subset(load(filePath), testingPercentage);
+function withTerrainOutput = with_terrain(filePath, trainingPercentage, algorithm, improvement, layersAndSize, activationFunc, activationFuncDerived, minimumError, learningRate, betha, alpha, adaptativeA, adaptativeB, kEpochs)
+  dataSets = utils.get_random_subset(load(filePath), trainingPercentage);
 
   trainingSet = dataSets{1};
   normalizeTrainingInput = utils.normalize_x(dataSets{1}{2});
   trainingSet{2} = normalizeTrainingInput{1};
 
-  if (!testingPercentage)
+  if (trainingPercentage == 1)
     testingSet{1} = [];
     testingSet{2} = [];
   else
@@ -44,7 +44,7 @@ function withTerrainOutput = with_terrain(filePath, testingPercentage, algorithm
     testingSet{2} = normalizeTestingInput{1};
   end
 
-  networkWeights = test_network.configurations{algorithm}{improvement}(trainingSet, testingSet, layersAndSize, minimumError, learningRate, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs);
+  networkWeights = test_network.configurations{algorithm}{improvement}(trainingSet, testingSet, true, trainingPercentage, layersAndSize, minimumError, learningRate, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs);
 
   outputSet{1} = trainingSet{1};
   for i = 1:rows(trainingSet{1})
