@@ -3,11 +3,14 @@ function utils = utils()
   utils.get_training_set = @get_training_set;
   utils.get_random_subset = @get_random_subset;
 
+  utils.sizeFactor = 15;
+  utils.step = 20;
   utils.plot_original_function = @plot_original_function;
   utils.plot_training_set = @plot_training_set;
   utils.plot_error_vs_epoch = @plot_error_vs_epoch;
   utils.plot_learning_rate_vs_epoch = @plot_learning_rate_vs_epoch;
   utils.plot_aproximated_function = @plot_aproximated_function;
+  utils.plot_testing_set = @plot_testing_set;
 
   utils.normalize_x = @normalize_x;
   utils.denormalize_x = @denormalize_x;
@@ -54,54 +57,102 @@ function randomSubsetOutput = get_random_subset(matrix, percentage)
   randomSubsetOutput{2}{2} = matrix(rowsOrder((mustExtract + 1):matrixRows), 3);
 end
 
-function plot_original_function(trainingSet, testingSet, sizeFactor)
+function plot_original_function(trainingSet, testingSet)
   subplot(2,3,1);
 
   inputs = [trainingSet{1} ; testingSet{1}];
   outputs = [trainingSet{2} ; testingSet{2}];
-  s = ones(length(outputs), 1) .* sizeFactor; %size
+  s = ones(length(outputs), 1) .* utils.sizeFactor; %size
   c = outputs; % Color relative to height
 
   scatter3(inputs(:,1), inputs(:,2), outputs, s, c, 'filled')
   axis([-3 3.5 -3 3 -1.1 1.1]);
+
+  title('Original function');
+  xlabel('X');
+  ylabel('Y');
+  zlabel('Z');
 end
 
-function plot_training_set(inputs, outputs, sizeFactor)
+function plot_training_set(trainingSet, outputs)
   subplot(2,3,2);
 
-  s = ones(length(outputs), 1) .* sizeFactor; %size
+  s = ones(length(outputs), 1) .* utils.sizeFactor; %size
   c = outputs;
 
-  scatter3(inputs(:,1), inputs(:,2), outputs, s, c, 'filled')
+  scatter3(trainingSet(:,1), trainingSet(:,2), outputs, s, c, 'filled')
   axis([-3 3.5 -3 3 -1.1 1.1]);
+
+  title('TrainingSet vs outputs');
+  xlabel('X');
+  ylabel('Y');
+  zlabel('Z');end
+
+function plot_testing_set(testingSet, networkWeights, activation_func, betha)
+  subplot(2,3,3);
+
+  inputs = testingSet{1};
+  outputs = network_utils.forward_propagation(inputs, networkWeights, activation_func, betha);
+  netOutputs = outputs{columns(outputs)};
+  s = ones(length(netOutputs), 1) .* utils.sizeFactor; %size
+  c = netOutputs;
+
+  scatter3(inputs(:,1), inputs(:,2), netOutputs, s, c, 'filled')
+  axis([-3 3.5 -3 3 -1.1 1.1]);
+
+  title('TestingSet vs outputs');
+  xlabel('X');
+  ylabel('Y');
+  zlabel('Z');
 end
 
-function plot_error_vs_epoch(epoch, deltaError, testError)
+function plot_error_vs_epoch(epoch, trainingError, testError)
   subplot(2,3,4)
   hold on;
 
-  plot(epoch, deltaError, '.k', epoch, testError, '.r')
+  global trainingErrors;
+  global testingErrors;
+  trainingErrors = [trainingErrors trainingError];
+  testingErrors = [testingErrors testError];
+
+  plot(1:utils.step:epoch,  trainingErrors, '-ok', 1:utils.step:epoch, testingErrors, '-or')
+
+  title('TrainingError and testingEror');
+  xlabel('Epoch');
+  ylabel('Error');
 end
 
 function plot_learning_rate_vs_epoch(epoch, learningRate)
   subplot(2,3,5)
   hold on;
+  
+  global learningRates;
+  learningRates = [learningRates learningRate];
 
-  plot(epoch, learningRate, '.k')
+  plot(1:utils.step:epoch, learningRates, '-ok')
+
+  title('LearningRate vs epoch');
+  xlabel('Epoch');
+  ylabel('LearningRate');
 end
 
-function plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalLayers, sizeFactor)
-  subplot(2,3,3)
+function plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalLayers)
+  subplot(2,3,6)
 
   inputs = [trainingSet{1} ; testingSet{1}];
   outputs = network_utils.forward_propagation(inputs, networkWeights, activation_func, betha);
   netOutputs = outputs{columns(outputs)};
 
-  s = ones(length(netOutputs), 1) .* sizeFactor; %size
+  s = ones(length(netOutputs), 1) .* utils.sizeFactor; %size
   c = netOutputs; % Color relative to height
 
   scatter3(inputs(:,1), inputs(:,2), netOutputs, s, c, 'filled');
   axis([-3 3.5 -3 3 -1.1 1.1]);
+
+  title('Aproximated function');
+  xlabel('X');
+  ylabel('Y');
+  zlabel('Z');
 end
 
 function output = normalize_x(A)
