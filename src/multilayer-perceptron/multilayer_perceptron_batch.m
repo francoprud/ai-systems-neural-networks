@@ -33,6 +33,7 @@ function output = multilayer_perceptron_batch(trainingSet, testingSet, needsPlot
 
   epoch = 0;
   currentMinimumError = currentError;
+  currentMinimumTestError = 1000;
 
   while (currentError > minimumError)
     delta{totalEdgesLayers} = activation_func_derived(V{totalEdgesLayers}, betha).*(trainingSet{2} - V{totalEdgesLayers});
@@ -54,7 +55,7 @@ function output = multilayer_perceptron_batch(trainingSet, testingSet, needsPlot
     epoch++;
 
     if (mod(epoch, utils.step) == 0)
-      printf('epocas = %d; currentError = %g; currentMinimumError = %g\n', epoch, currentError, currentMinimumError);
+      percentageLearned = utils.calculate_errors(trainingSet, testingSet, networkWeights, activation_func, betha);
 
       if (needsPlot)
         utils.plot_training_set(trainingSet{1}, V{totalLayers - 1});
@@ -64,6 +65,10 @@ function output = multilayer_perceptron_batch(trainingSet, testingSet, needsPlot
           testError = network_utils.get_test_error(networkWeights, testingSet, activation_func, betha);
         else
           testError = 0;
+        end
+
+        if (currentMinimumTestError > testError)
+          currentMinimumTestError = testError;
         end
 
         trainingErrors = [lastTrainingError currentError];
@@ -78,6 +83,10 @@ function output = multilayer_perceptron_batch(trainingSet, testingSet, needsPlot
 
         utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalEdgesLayers);
         drawnow;
+
+        printf('epocas = %d; currentError = %g; currentMinimumError = %g; testError = %g; currentMinimumTestError = %g; percentageLearned = %g\n', epoch, currentError, currentMinimumError, testError, currentMinimumTestError, percentageLearned);
+      else
+        printf('epocas = %d; currentError = %g; currentMinimumError = %g; percentageLearned = %g\n', epoch, currentError, currentMinimumError, percentageLearned);
       end
 
       fflush(stdout);

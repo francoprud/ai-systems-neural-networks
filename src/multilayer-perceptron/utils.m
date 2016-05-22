@@ -4,7 +4,7 @@ function utils = utils()
   utils.get_random_subset = @get_random_subset;
 
   utils.sizeFactor = 15;
-  utils.step = 20;
+  utils.step = 100;
   utils.plot_original_function = @plot_original_function;
   utils.plot_training_set = @plot_training_set;
   utils.plot_error_vs_epoch = @plot_error_vs_epoch;
@@ -14,6 +14,8 @@ function utils = utils()
 
   utils.normalize_x = @normalize_x;
   utils.denormalize_x = @denormalize_x;
+
+  utils.calculate_errors = @calculate_errors;
 end
 
 function trainingSet = get_training_set(f, n)
@@ -109,7 +111,7 @@ end
 function plot_error_vs_epoch(epoch, trainingErrors, testingErrors)
   subplot(2,3,4)
   hold on;
-  
+
   plot([epoch-utils.step epoch], trainingErrors, '-ok', [epoch-utils.step epoch], testingErrors, '-or')
 
   title('TrainingError and testingEror');
@@ -161,4 +163,15 @@ function denormalizedOutput = denormalize_x(A, B)
   for i = 1:columns(A)
     denormalizedOutput(i) = denormalizedOutput(i) + B(1);
   end
+end
+
+function calculateErrorsOutput = calculate_errors(trainingSet, testingSet, networkWeights, activation_func, betha)
+  delta = 0.021412;
+  inputs = [trainingSet{1}; testingSet{1}];
+  outputs = network_utils.forward_propagation(inputs, networkWeights, activation_func, betha);
+  expectedOutputs = [trainingSet{2}; testingSet{2}];
+
+  result = abs(expectedOutputs - outputs{columns(networkWeights)}) <= delta;
+
+  calculateErrorsOutput = sum(result) / rows(inputs);
 end
