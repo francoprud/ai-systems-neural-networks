@@ -28,14 +28,21 @@ function withFunctionOutput = with_function(algorithm, improvement, layersAndSiz
   end
 end
 
-function withTerrainOutput = with_terrain(filePath, algorithm, improvement, layersAndSize, activationFunc, activationFuncDerived, minimumError, learningRate, betha, alpha, adaptativeA, adaptativeB, kEpochs)
-  dataSets = utils.get_random_subset(load(filePath), 0.5);
+function withTerrainOutput = with_terrain(filePath, testingPercentage, algorithm, improvement, layersAndSize, activationFunc, activationFuncDerived, minimumError, learningRate, betha, alpha, adaptativeA, adaptativeB, kEpochs)
+  dataSets = utils.get_random_subset(load(filePath), testingPercentage);
+
   trainingSet = dataSets{1};
-  testingSet = dataSets{2};
   normalizeTrainingInput = utils.normalize_x(dataSets{1}{2});
   trainingSet{2} = normalizeTrainingInput{1};
-  normalizeTestingInput = utils.normalize_x(dataSets{2}{2});
-  testingSet{2} = normalizeTestingInput{1};
+
+  if (!testingPercentage)
+    testingSet{1} = [];
+    testingSet{2} = [];
+  else
+    testingSet = dataSets{2};
+    normalizeTestingInput = utils.normalize_x(dataSets{2}{2});
+    testingSet{2} = normalizeTestingInput{1};
+  end
 
   networkWeights = test_network.configurations{algorithm}{improvement}(trainingSet, testingSet, layersAndSize, minimumError, learningRate, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs);
 
