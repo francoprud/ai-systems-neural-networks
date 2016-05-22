@@ -7,7 +7,7 @@
 % activation_func:
 % activation_func_derived:
 % betha:
-function output = multilayer_perceptron_incremental(trainingSet, testingSet, layersAndSize, minimumError, learingRate, activation_func, activation_func_derived, betha)
+function output = multilayer_perceptron_incremental(trainingSet, testingSet, layersAndSize, minimumError, learingRate, activation_func, activation_func_derived, betha, alpha, adaptativeA, adaptativeB, kEpochs)
   totalInputs = rows(trainingSet{1});
   totalOutputs = rows(trainingSet{2});
   inputSize = columns(trainingSet{1});
