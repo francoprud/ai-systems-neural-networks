@@ -2,12 +2,12 @@
 %   {1}: matrix NxM where N is the amount of inputs and M is the size of each input
 %   {2}: matrix NxK where N is the amount of outputs (equal to inputs) and K is the size of each output
 % minimumError: minimum error that determines when to stop training
-% learingRate: positive parameter for gradient descent to work
+% learningRate: positive parameter for gradient descent to work
 % layersAndSize: array that represents amount of layers and neurons in each layer, starting from the first hidden layer
 % activation_func:
 % activation_func_derived:
 % betha:
-function output = multilayer_perceptron_incremental(trainingSet, testingSet, layersAndSize, minimumError, learingRate, activation_func, activation_func_derived, betha, alpha, adaptativeA, adaptativeB, kEpochs)
+function output = multilayer_perceptron_incremental(trainingSet, testingSet, layersAndSize, minimumError, learningRate, activation_func, activation_func_derived, betha, alpha, adaptativeA, adaptativeB, kEpochs)
   totalInputs = rows(trainingSet{1});
   totalOutputs = rows(trainingSet{2});
   inputSize = columns(trainingSet{1});
@@ -49,10 +49,10 @@ function output = multilayer_perceptron_incremental(trainingSet, testingSet, lay
       for j = (totalEdgesLayers):-1:2
         layers = networkWeights{j}(2 : end, :); % Remove -1 neuron to layers
         delta{j - 1} = activation_func_derived(V{j - 1}, betha).*(delta{j} * layers');
-        deltaWeight = learingRate * [-1 V{j - 1}]' * delta{j};
+        deltaWeight = learningRate * [-1 V{j - 1}]' * delta{j};
         networkWeights{j} = networkWeights{j} + deltaWeight;
       end
-      deltaWeight = learingRate * [-1 trainingSet{1}(currentIndex, :)]' * delta{1};
+      deltaWeight = learningRate * [-1 trainingSet{1}(currentIndex, :)]' * delta{1};
       networkWeights{1} = networkWeights{1} + deltaWeight;
     end
 
