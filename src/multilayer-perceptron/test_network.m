@@ -46,17 +46,23 @@ function withTerrainOutput = with_terrain(filePath, trainingPercentage, algorith
 
   networkWeights = test_network.configurations{algorithm}{improvement}(trainingSet, testingSet, true, trainingPercentage, layersAndSize, minimumError, learningRate, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs);
 
-  outputSet{1} = trainingSet{1};
-  for i = 1:rows(trainingSet{1})
-    V = network_utils.forward_propagation([trainingSet{1}(i, :)], networkWeights, activationFunc, betha);
-    outputSet{2}(i, :) = V{columns(layersAndSize)};
-  end
-  outputSet{2} = utils.denormalize_x(outputSet{2}, normalizeInput{2});
+  outputTrainingSet{1} = trainingSet{1};
+  V = network_utils.forward_propagation(outputTrainingSet{1}, networkWeights, activationFunc, betha);
+  outputTrainingSet{2} = V{columns(layersAndSize)};
+  outputTrainingSet{2} = utils.denormalize_x(outputTrainingSet{2}, normalizeTrainingInput{2});
+
+  outputTestingSet{1} = testingSet{1};
+  V = network_utils.forward_propagation(outputTestingSet{1}, networkWeights, activationFunc, betha);
+  outputTestingSet{2} = V{columns(layersAndSize)};
+  outputTestingSet{2} = utils.denormalize_x(outputTestingSet{2}, normalizeTestingInput{2});
+
+  outputSet{1} = [outputTrainingSet{1} ; outputTestingSet{1}];
+  outputSet{2} = [outputTrainingSet{2} ; outputTestingSet{2}];
 
   fid = fopen('../../doc/data/result.txt', 'w+');
-  fprintf(fid, '%d\n\n', rows(trainingSet{1}));
+  fprintf(fid, '%d\n\n', rows(outputSet{1}));
 
-  for i = 1:rows(trainingSet{1})
+  for i = 1:rows(outputSet{1})
     result = [outputSet{1}(i, :) outputSet{2}(i, :)];
 
     fprintf(fid, '%g ', result);
