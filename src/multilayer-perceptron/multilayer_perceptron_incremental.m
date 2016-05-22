@@ -13,6 +13,9 @@ function output = multilayer_perceptron_incremental(trainingSet, testingSet, lay
   inputSize = columns(trainingSet{1});
   totalLayers = columns(layersAndSize) + 1; % All layers including entrance and output layers
   totalEdgesLayers = columns(layersAndSize); % Total amount of edges "spaces"
+  lastTrainingError = [];
+  lastTestingError = [];
+  lastLearningRate = [];
 
   if (totalInputs != totalOutputs)
     printf('The training set is invalid.\n');
@@ -69,9 +72,15 @@ function output = multilayer_perceptron_incremental(trainingSet, testingSet, lay
       utils.plot_testing_set(testingSet, networkWeights, activation_func, betha)
 
       testError = network_utils.get_test_error(networkWeights, testingSet, activation_func, betha);
-      utils.plot_error_vs_epoch(epoch, currentError, testError)
+      trainingErrors = [lastTrainingError currentError];
+      testingErrors = [lastTestingError testError];
+      utils.plot_error_vs_epoch(epoch, trainingErrors, testingErrors)
+      lastTrainingError = [currentError];
+      lastTestingError = [testError];
 
-      utils.plot_learning_rate_vs_epoch(epoch, learingRate);
+      learningRates = [lastLearningRate learningRate];
+      utils.plot_learning_rate_vs_epoch(epoch, learningRates);
+      lastLearningRate = [learningRate];
 
       utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalEdgesLayers);
 

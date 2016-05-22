@@ -2,12 +2,12 @@
 %   {1}: matrix NxM where N is the amount of inputs and M is the size of each input
 %   {2}: matrix NxK where N is the amount of outputs (equal to inputs) and K is the size of each output
 % minimumError: minimum error that determines when to stop training
-% learingRate: positive parameter for gradient descent to work
+% learningRate: positive parameter for gradient descent to work
 % layersAndSize: array that represents amount of layers and neurons in each layer, starting from the first hidden layer
 % activation_func:
 % activation_func_derived:
 % betha:
-function output = multilayer_perceptron_incremental_adaptative_etha(trainingSet, testingSet, layersAndSize, minimumError, learingRate, activation_func, activation_func_derived, betha, alpha, adaptativeA, adaptativeB, kEpochs)
+function output = multilayer_perceptron_incremental_adaptative_etha(trainingSet, testingSet, layersAndSize, minimumError, learningRate, activation_func, activation_func_derived, betha, alpha, adaptativeA, adaptativeB, kEpochs)
   totalInputs = rows(trainingSet{1});
   totalOutputs = rows(trainingSet{2});
   inputSize = columns(trainingSet{1});
@@ -15,6 +15,9 @@ function output = multilayer_perceptron_incremental_adaptative_etha(trainingSet,
   totalEdgesLayers = columns(layersAndSize); % Total amount of edges "spaces"
   epoch = 0;
   counter = 0;
+  lastTrainingError = [];
+  lastTestingError = [];
+  lastLearningRate = [];
 
   if (totalInputs != totalOutputs)
     printf('The training set is invalid.\n');
@@ -50,10 +53,10 @@ function output = multilayer_perceptron_incremental_adaptative_etha(trainingSet,
       for j = (totalEdgesLayers):-1:2
         layers = networkWeights{j}(2 : end, :); % Remove -1 neuron to layers
         delta{j - 1} = activation_func_derived(V{j - 1}, betha).*(delta{j} * layers');
-        deltaWeight = learingRate * [-1 V{j - 1}]' * delta{j};
+        deltaWeight = learningRate * [-1 V{j - 1}]' * delta{j};
         networkWeights{j} = networkWeights{j} + deltaWeight;
       end
-      deltaWeight = learingRate * [-1 trainingSet{1}(currentIndex, :)]' * delta{1};
+      deltaWeight = learningRate * [-1 trainingSet{1}(currentIndex, :)]' * delta{1};
       networkWeights{1} = networkWeights{1} + deltaWeight;
     end
 
@@ -71,11 +74,11 @@ function output = multilayer_perceptron_incremental_adaptative_etha(trainingSet,
     if (currentError - previousError < 0)
       counter++;
       if (counter >= kEpochs)
-        learingRate += adaptativeA;
+        learningRate += adaptativeA;
       end
     else
       counter = 0;
-      learingRate *= (1 - adaptativeB);
+      learningRate *= (1 - adaptativeB);
       currentError = previousError;
       networkWeights = previousNetworkWeights;
     end
@@ -83,14 +86,21 @@ function output = multilayer_perceptron_incremental_adaptative_etha(trainingSet,
     if (mod(epoch, 20) == 0)
       printf('epocas = %d; currentError = %g; currentMinimumError = %g\n', epoch, currentError, currentMinimumError);
 
-      utils.plot_training_set(trainingSet{1}, V{totalLayers - 1}, sizeFactor)
+      utils.plot_training_set(trainingSet{1}, V{totalLayers - 1})
+      utils.plot_testing_set(testingSet, networkWeights, activation_func, betha)
 
       testError = network_utils.get_test_error(networkWeights, testingSet, activation_func, betha);
-      utils.plot_error_vs_epoch(epoch, currentError, testError)
+      trainingErrors = [lastTrainingError currentError];
+      testingErrors = [lastTestingError testError];
+      utils.plot_error_vs_epoch(epoch, trainingErrors, testingErrors)
+      lastTrainingError = [currentError];
+      lastTestingError = [testError];
 
-      utils.plot_learning_rate_vs_epoch(epoch, learingRate);
+      learningRates = [lastLearningRate learningRate];
+      utils.plot_learning_rate_vs_epoch(epoch, learningRates);
+      lastLearningRate = [learningRate];
 
-      utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalEdgesLayers, sizeFactor);
+      utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalEdgesLayers);
 
       fflush(stdout);
       drawnow;

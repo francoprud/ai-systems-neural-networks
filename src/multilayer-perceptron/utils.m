@@ -106,30 +106,22 @@ function plot_testing_set(testingSet, networkWeights, activation_func, betha)
   zlabel('Z');
 end
 
-function plot_error_vs_epoch(epoch, trainingError, testError)
+function plot_error_vs_epoch(epoch, trainingErrors, testingErrors)
   subplot(2,3,4)
   hold on;
-
-  global trainingErrors;
-  global testingErrors;
-  trainingErrors = [trainingErrors trainingError];
-  testingErrors = [testingErrors testError];
-
-  plot(1:utils.step:epoch,  trainingErrors, '-ok', 1:utils.step:epoch, testingErrors, '-or')
+  
+  plot([epoch-utils.step epoch], trainingErrors, '-ok', [epoch-utils.step epoch], testingErrors, '-or')
 
   title('TrainingError and testingEror');
   xlabel('Epoch');
   ylabel('Error');
 end
 
-function plot_learning_rate_vs_epoch(epoch, learningRate)
+function plot_learning_rate_vs_epoch(epoch, learningRates)
   subplot(2,3,5)
   hold on;
-  
-  global learningRates;
-  learningRates = [learningRates learningRate];
 
-  plot(1:utils.step:epoch, learningRates, '-ok')
+  plot([epoch-utils.step epoch], learningRates, '-ok')
 
   title('LearningRate vs epoch');
   xlabel('Epoch');
