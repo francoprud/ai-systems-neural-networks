@@ -1,25 +1,14 @@
 function testNetwork = test_network()
   testNetwork.with_function = @with_function;
   testNetwork.with_terrain = @with_terrain;
-
-  testNetwork.configurations = {
-    {
-      @multilayer_perceptron_incremental,
-      @multilayer_perceptron_incremental_momentum,
-      @multilayer_perceptron_incremental_adaptative_etha
-    }
-    {
-      @multilayer_perceptron_batch
-    }
-  };
 end
 
-function withFunctionOutput = with_function(algorithm, improvement, layersAndSize, func, N, activationFunc, activationFuncDerived, minimumError, learningRate, betha, alpha, adaptativeA, adaptativeB, kEpochs)
+function withFunctionOutput = with_function(layersAndSize, func, N, activationFunc, activationFuncDerived, minimumError, learningRate, betha, alpha, adaptativeA, adaptativeB, kEpochs)
   trainingSet = utils.get_training_set(func, N);
   testingSet{1} = [];
   testingSet{2} = [];
 
-  networkWeights = test_network.configurations{algorithm}{improvement}(trainingSet, testingSet, false, 1, layersAndSize, minimumError, learningRate, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs, adaptativeA, adaptativeB, kEpochs);
+  networkWeights = multilayer_perceptron_incremental_complete(trainingSet, testingSet, false, 1, layersAndSize, minimumError, learningRate, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs, adaptativeA, adaptativeB, kEpochs);
 
   for i = 1:rows(trainingSet{1})
     V = network_utils.forward_propagation([trainingSet{1}(i, :)], networkWeights, activationFunc, betha);
@@ -28,7 +17,7 @@ function withFunctionOutput = with_function(algorithm, improvement, layersAndSiz
   end
 end
 
-function withTerrainOutput = with_terrain(filePath, trainingPercentage, algorithm, improvement, layersAndSize, activationFunc, activationFuncDerived, minimumError, learningRate, betha, alpha, adaptativeA, adaptativeB, kEpochs)
+function withTerrainOutput = with_terrain(filePath, trainingPercentage, layersAndSize, activationFunc, activationFuncDerived, minimumError, learningRate, betha, alpha, adaptativeA, adaptativeB, kEpochs)
   dataSets = utils.get_random_subset(load(filePath), trainingPercentage);
 
   trainingSet = dataSets{1};
@@ -44,7 +33,7 @@ function withTerrainOutput = with_terrain(filePath, trainingPercentage, algorith
     testingSet{2} = normalizeTestingInput{1};
   end
 
-  networkWeights = test_network.configurations{algorithm}{improvement}(trainingSet, testingSet, true, trainingPercentage, layersAndSize, minimumError, learningRate, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs);
+  networkWeights = multilayer_perceptron_incremental_complete(trainingSet, testingSet, true, trainingPercentage, layersAndSize, minimumError, learningRate, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs);
 
   outputTrainingSet{1} = trainingSet{1};
   V = network_utils.forward_propagation(outputTrainingSet{1}, networkWeights, activationFunc, betha);

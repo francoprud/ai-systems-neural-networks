@@ -16,8 +16,6 @@ test_network.with_function(func, N, algorithm, improvement, layersAndSize, activ
 
 - ***func*** [function]: function that want to be learned. It can be: *@and, @or, @xor, @parity, @simetry*.
 - ***N*** [integer]: the amount of columns of each input.
-- ***algorithm*** [integer]: the algorithm to use for the neural network. 1: incremental/online, 2: batch.
-- ***improvement*** [integer]: the improvement to be applied to the previous selected algorithm. For incremental/online are: 1: original, 2: momentum, 3: adaptative etha. For batch are: 1: original.
 - ***layersAndSize*** [array]: array that represents the amount of layers and neurons in each layer, starting from the first hidden layer.
 - ***activationFunc*** [function]: activation function. Can be: *activation_functions.tanh*, *activation_functions.exp*.
 - ***activationFuncDerived*** [function]: derived function of the activation function. If *activation_functions.tanh* then it must be *activation_functions.tanh_derived*. If *activation_functions.exp* then it must be *activation_functions.exp_derived*.
@@ -32,11 +30,11 @@ test_network.with_function(func, N, algorithm, improvement, layersAndSize, activ
 #### Basic examples
 
 ```matlab
-test_network.with_function(@and, 3, 1, 1, [3 1], activation_functions.tanh, activation_functions.tanh_derived, 0.01, 0.5, 0.1, 0, 0.1, 0.1, 2)
+test_network.with_function(@and, 3, [3 1], activation_functions.tanh, activation_functions.tanh_derived, 0.01, 0.5, 0.1, 0, 0.1, 0.1, 2)
 
-test_network.with_function(@simetry, 3, 1, 2, [3 1], activation_functions.tanh, activation_functions.tanh_derived, 0.01, 0.1, 0.55, 0, 0.1, 0.1, 2)
+test_network.with_function(@simetry, 3, [3 1], activation_functions.tanh, activation_functions.tanh_derived, 0.01, 0.1, 0.55, 0, 0.1, 0.1, 2)
 
-test_network.with_function(@parity, 3, 1, 2, [6 1], activation_functions.tanh, activation_functions.tanh_derived, 0.01, 0.1, 0.55, 0.4, 0.1, 0.1, 2)
+test_network.with_function(@parity, 3, [6 1], activation_functions.tanh, activation_functions.tanh_derived, 0.01, 0.1, 0.55, 0.4, 0.1, 0.1, 2)
 ```
 
 ### `test_network.with_terrain`
@@ -53,8 +51,6 @@ test_network.with_terrain(filePath, trainingPercentage, algorithm, improvement, 
 
 - ***filePath*** [string]: the path of the file to load the sample values.
 - ***trainingPercentage*** [double]: the percentage of those same values to be consider as the training inputs, the rest will be consider as the testing input. Value from 0 to 1.
-- ***algorithm*** [integer]: the algorithm to use for the neural network. 1: incremental/online, 2: batch.
-- ***improvement*** [integer]: the improvement to be applied to the previous selected algorithm. For incremental/online are: 1: original, 2: momentum, 3: adaptative etha. For batch are: 1: original.
 - ***layersAndSize*** [array]: array that represents the amount of layers and neurons in each layer, starting from the first hidden layer.
 - ***activationFunc*** [function]: activation function. Can be: *activation_functions.tanh*, *activation_functions.exp*.
 - ***activationFuncDerived*** [function]: derived function of the activation function. If *activation_functions.tanh* then it must be *activation_functions.tanh_derived*. If *activation_functions.exp* then it must be *activation_functions.exp_derived*.
@@ -69,9 +65,9 @@ test_network.with_terrain(filePath, trainingPercentage, algorithm, improvement, 
 #### Basic examples
 
 ```matlab
-test_network.with_terrain('../../doc/data/terrain8.txt', 1, 1, 3, [6 5 4 1], activation_functions.tanh, activation_functions.tanh_derived, 0.0001, 0.5, 0.55, 0, 0.2, 0.05, 2)
+test_network.with_terrain('../../doc/data/terrain8.txt', 1, [6 5 4 1], activation_functions.tanh, activation_functions.tanh_derived, 0.0001, 0.5, 0.55, 0, 0.2, 0.05, 2)
 
-test_network.with_terrain('../../doc/data/terrain8.txt', 0.5, 1, 3, [2 2 1], activation_functions.exp, activation_functions.exp_derived, 0.0001, 0.5, 0.55, 0, 0.2, 0.05, 2)
+test_network.with_terrain('../../doc/data/terrain8.txt', 0.5, [2 2 1], activation_functions.exp, activation_functions.exp_derived, 0.0001, 0.5, 0.55, 0, 0.2, 0.05, 2)
 
-test_network.with_terrain('../../doc/data/terrain8.txt', 0.9, 1, 1, [6 5 4 1], activation_functions.tanh, activation_functions.tanh_derived, 0.0001, 0.5, 0.55, 0, 0, 0, 0)
+test_network.with_terrain('../../doc/data/terrain8.txt', 0.9, [6 5 4 1], activation_functions.tanh, activation_functions.tanh_derived, 0.0001, 0.5, 0.55, 0, 0, 0, 0)
 ```
