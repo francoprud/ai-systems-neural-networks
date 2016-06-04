@@ -35,4 +35,4 @@ slprj/
 octave-workspace
 
 # Data
-doc/data/*
+doc/data/result.txt
