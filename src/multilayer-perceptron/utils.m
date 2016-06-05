@@ -3,6 +3,7 @@ function utils = utils()
   utils.get_training_set = @get_training_set;
   utils.get_random_subset = @get_random_subset;
 
+  utils.get_activation_funs = @get_activation_funs;
   utils.sizeFactor = 15;
   utils.step = 100;
   utils.plot_original_function = @plot_original_function;
@@ -16,6 +17,19 @@ function utils = utils()
   utils.denormalize_x = @denormalize_x;
 
   utils.calculate_errors = @calculate_errors;
+end
+
+function funs = get_activation_funs(x)
+  switch(x)
+  case 1
+    %tangente hiperbolica
+    funs{1} = activation_functions.tanh;
+    funs{2} = activation_functions.tanh_derived;
+  case 2
+    %exponencial
+    funs{1} = activation_functions.exp;
+    funs{2} = activation_functions.exp_derived;
+  end
 end
 
 function trainingSet = get_training_set(f, n)
@@ -68,7 +82,7 @@ function plot_original_function(trainingSet, testingSet)
   c = outputs; % Color relative to height
 
   scatter3(inputs(:,1), inputs(:,2), outputs, s, c, 'filled')
-  axis([-3 3.5 -3 3 -1.1 1.1]);
+  axis([-1 1 -1 1 -1 1]);
 
   title('Original function');
   xlabel('X');
@@ -83,7 +97,7 @@ function plot_training_set(trainingSet, outputs)
   c = outputs;
 
   scatter3(trainingSet(:,1), trainingSet(:,2), outputs, s, c, 'filled')
-  axis([-3 3.5 -3 3 -1.1 1.1]);
+  axis([-1 1 -1 1 -1 1]);
 
   title('TrainingSet vs outputs');
   xlabel('X');
@@ -100,7 +114,7 @@ function plot_testing_set(testingSet, networkWeights, activation_func, betha)
   c = netOutputs;
 
   scatter3(inputs(:,1), inputs(:,2), netOutputs, s, c, 'filled')
-  axis([-3 3.5 -3 3 -1.1 1.1]);
+  axis([-1 1 -1 1 -1 1]);
 
   title('TestingSet vs outputs');
   xlabel('X');
@@ -139,7 +153,7 @@ function plot_aproximated_function(networkWeights, trainingSet, testingSet, acti
   c = netOutputs; % Color relative to height
 
   scatter3(inputs(:,1), inputs(:,2), netOutputs, s, c, 'filled');
-  axis([-3 3.5 -3 3 -1.1 1.1]);
+  axis([-1 1 -1 1 -1 1]);
 
   title('Aproximated function');
   xlabel('X');
@@ -147,19 +161,33 @@ function plot_aproximated_function(networkWeights, trainingSet, testingSet, acti
   zlabel('Z');
 end
 
-function output = normalize_x(A)
+function output = normalize_x(A, a, b)
   maximum = max(A);
   minimum = min(A);
   range = maximum - minimum;
+  radius = (b - a)/2;
   output{2}(1) = minimum + (range/2);
-  output{2}(2) = range/2;
-  output{1} = (A.-(output{2}(1)))./output{2}(2);
+  output{2}(2) = range/(2*radius);
+  output{2}(3) = radius + a;
+  output{1} = ((A.-(output{2}(1)))./output{2}(2)).+output{2}(3);
 end
 
 function denormalizedOutput = denormalize_x(A, B)
-  denormalizedOutput = A.*(B(2));
-  for i = 1:columns(A)
+  transpose_after = false;
+  Ap = A;
+  if (columns(A) == 1)
+    transpose_after = true;
+    Ap = A';
+  end
+  for i = 1:columns(Ap)
+    denormalizedOutput(i) = Ap(i) - B(3);
+  end
+  denormalizedOutput = denormalizedOutput.*(B(2));
+  for i = 1:columns(Ap)
     denormalizedOutput(i) = denormalizedOutput(i) + B(1);
+  end
+  if (transpose_after)
+    denormalizedOutput = denormalizedOutput';
   end
 end
 
