@@ -4,7 +4,7 @@ function utils = utils()
   utils.get_random_subset = @get_random_subset;
 
   utils.sizeFactor = 15;
-  utils.step = 1;
+  utils.step = 100;
   utils.plot_original_function = @plot_original_function;
   utils.plot_training_set = @plot_training_set;
   utils.plot_error_vs_epoch = @plot_error_vs_epoch;
@@ -110,20 +110,18 @@ end
 
 function plot_error_vs_epoch(epoch, trainingErrors, testingErrors)
   subplot(2,3,4)
-  hold on;
 
-  plot([epoch-utils.step epoch], trainingErrors, '-ok', 'linewidth', 3, [epoch-utils.step epoch], testingErrors, '-or', 'linewidth', 3)
+  plot(1:epoch, trainingErrors, '-ok', 'linewidth', 3, 1:epoch, testingErrors, '-or', 'linewidth', 3)
 
-  title('TrainingError and testingEror');
+  title('TrainingError and testingError');
   xlabel('Epoch');
   ylabel('Error');
 end
 
 function plot_learning_rate_vs_epoch(epoch, learningRates)
   subplot(2,3,5)
-  hold on;
 
-  plot([epoch-utils.step epoch], learningRates, '-ok', 'linewidth', 3)
+  plot(1:epoch, learningRates, '-ok', 'linewidth', 3)
 
   title('LearningRate vs epoch');
   xlabel('Epoch');
@@ -166,7 +164,7 @@ function denormalizedOutput = denormalize_x(A, B)
 end
 
 function calculateErrorsOutput = calculate_errors(trainingSet, testingSet, networkWeights, activation_func, betha)
-  delta = 0.021412;
+  delta = 0.1;
   inputs = [trainingSet{1}; testingSet{1}];
   outputs = network_utils.forward_propagation(inputs, networkWeights, activation_func, betha);
   expectedOutputs = [trainingSet{2}; testingSet{2}];

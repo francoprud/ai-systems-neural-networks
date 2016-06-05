@@ -16,9 +16,9 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
   alphaValue = alpha;
   epoch = 0;
   counter = 0;
-  lastTrainingError = [];
-  lastTestingError = [];
-  lastLearningRate = [];
+  trainingErrors = [];
+  testingErrors = [];
+  learningRates = [];
 
   if (totalInputs != totalOutputs)
     printf('The training set is invalid.\n');
@@ -75,11 +75,28 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
     previousError = currentError;
     currentError = network_utils.calculate_error(trainingSet{2}, V{totalLayers - 1});
 
+    % Updating minimum training error
     if (currentError < currentMinimumError)
       currentMinimumError = currentError;
     end
 
+    % Calculating test error
+    if (trainingPercentage != 1)
+      utils.plot_testing_set(testingSet, networkWeights, activation_func, betha);
+      testError = network_utils.get_test_error(networkWeights, testingSet, activation_func, betha);
+    else
+      testError = 0;
+    end
+
+    % Updating minimum test error
+    if (currentMinimumTestError > testError)
+      currentMinimumTestError = testError;
+    end
+
     epoch++;
+    learningRates(end+1) = learningRate;
+    trainingErrors(end+1) = currentError;
+    testingErrors(end+1) = testError;
 
     if (adaptativeA != 0 || adaptativeB != 0)
       if (currentError - previousError < 0)
@@ -104,26 +121,9 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
       if (needsPlot)
         utils.plot_training_set(trainingSet{1}, V{totalLayers - 1});
 
-        if (trainingPercentage != 1)
-          utils.plot_testing_set(testingSet, networkWeights, activation_func, betha);
-          testError = network_utils.get_test_error(networkWeights, testingSet, activation_func, betha);
-        else
-          testError = 0;
-        end
-
-        if (currentMinimumTestError > testError)
-          currentMinimumTestError = testError;
-        end
-
-        trainingErrors = [lastTrainingError currentError];
-        testingErrors = [lastTestingError testError];
         utils.plot_error_vs_epoch(epoch, trainingErrors, testingErrors);
-        lastTrainingError = [currentError];
-        lastTestingError = [testError];
-
-        learningRates = [lastLearningRate learningRate];
+    
         utils.plot_learning_rate_vs_epoch(epoch, learningRates);
-        lastLearningRate = [learningRate];
 
         utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalEdgesLayers);
         drawnow;
