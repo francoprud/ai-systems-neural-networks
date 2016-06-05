@@ -5,7 +5,10 @@ function utils = utils()
 
   utils.get_activation_funs = @get_activation_funs;
   utils.sizeFactor = 15;
-  utils.step = 100;
+  utils.step = 10;
+  utils.fontSize = 15;
+  utils.markersize = 10;
+  utils.linewidth = 3;
   utils.plot_original_function = @plot_original_function;
   utils.plot_training_set = @plot_training_set;
   utils.plot_error_vs_epoch = @plot_error_vs_epoch;
@@ -74,91 +77,102 @@ function randomSubsetOutput = get_random_subset(matrix, percentage)
 end
 
 function plot_original_function(trainingSet, testingSet)
-  subplot(2,3,1);
+  figure(1);
 
   inputs = [trainingSet{1} ; testingSet{1}];
   outputs = [trainingSet{2} ; testingSet{2}];
-  s = ones(length(outputs), 1) .* utils.sizeFactor; %size
-  c = outputs; % Color relative to height
+  
+  plot3(inputs(:,1), inputs(:,2), outputs, '.b', 'markersize', utils.markersize)
 
-  scatter3(inputs(:,1), inputs(:,2), outputs, s, c, 'filled')
   axis([-1 1 -1 1 -1 1]);
-
-  title('Original function');
-  xlabel('X');
-  ylabel('Y');
-  zlabel('Z');
+  title('Original function', 'fontsize', utils.fontSize);
+  xlabel('X', 'fontsize', utils.fontSize);
+  ylabel('Y', 'fontsize', utils.fontSize);
+  zlabel('Z', 'fontsize', utils.fontSize);
+  set(gca, 'fontsize', utils.fontSize);
 end
 
-function plot_training_set(trainingSet, outputs)
-  subplot(2,3,2);
+function plot_training_set(trainingSet, networkOutputs)
+  figure(2);
 
-  s = ones(length(outputs), 1) .* utils.sizeFactor; %size
-  c = outputs;
+  plot3(trainingSet{1}(:,1), trainingSet{1}(:,2), networkOutputs, '.r', 'markersize', utils.markersize)
 
-  scatter3(trainingSet(:,1), trainingSet(:,2), outputs, s, c, 'filled')
   axis([-1 1 -1 1 -1 1]);
-
-  title('TrainingSet vs outputs');
-  xlabel('X');
-  ylabel('Y');
-  zlabel('Z');end
+  title('Patterns (X, Y) vs learned Z', 'fontsize', utils.fontSize);
+  xlabel('X', 'fontsize', utils.fontSize);
+  ylabel('Y', 'fontsize', utils.fontSize);
+  zlabel('Z', 'fontsize', utils.fontSize);
+  set(gca, 'fontsize', utils.fontSize);
+end
 
 function plot_testing_set(testingSet, networkWeights, activation_func, betha)
-  subplot(2,3,3);
+  if (rows(testingSet{1}) == 0)
+    return;
+  end
+
+  figure(3);
 
   inputs = testingSet{1};
   outputs = network_utils.forward_propagation(inputs, networkWeights, activation_func, betha);
   netOutputs = outputs{columns(outputs)};
-  s = ones(length(netOutputs), 1) .* utils.sizeFactor; %size
-  c = netOutputs;
 
-  scatter3(inputs(:,1), inputs(:,2), netOutputs, s, c, 'filled')
+  plot3(inputs(:,1), inputs(:,2), netOutputs, '.r', 'markersize', utils.markersize)
+
   axis([-1 1 -1 1 -1 1]);
-
-  title('TestingSet vs outputs');
-  xlabel('X');
-  ylabel('Y');
-  zlabel('Z');
+  title('Testing patterns (X, Y) vs learned Z', 'fontsize', utils.fontSize);
+  xlabel('X', 'fontsize', utils.fontSize);
+  ylabel('Y', 'fontsize', utils.fontSize);
+  zlabel('Z', 'fontsize', utils.fontSize);
+  set(gca, 'fontsize', utils.fontSize);
 end
 
-function plot_error_vs_epoch(epoch, trainingErrors, testingErrors)
-  subplot(2,3,4)
+function plot_error_vs_epoch(epoch, trainingErrors, testingErrors, plotTestError)
+  figure(4);
 
-  plot(1:epoch, trainingErrors, '-ok', 'linewidth', 3, 1:epoch, testingErrors, '-or', 'linewidth', 3)
+  if (plotTestError)
+    plot(1:epoch, trainingErrors, '-k', 'linewidth', utils.linewidth, 'markersize', utils.markersize, 1:epoch, testingErrors, '-r', 'linewidth', utils.linewidth, 'markersize', utils.markersize)
+    title('Training error and testing error', 'fontsize', utils.fontSize);
+  else
+    plot(1:epoch, trainingErrors, '-k', 'linewidth', utils.linewidth, 'markersize', utils.markersize)
+    title('Training error', 'fontsize', utils.fontSize);
+  end
 
-  title('TrainingError and testingError');
-  xlabel('Epoch');
-  ylabel('Error');
+  xlabel('Epoch', 'fontsize', utils.fontSize);
+  ylabel('Error', 'fontsize', utils.fontSize);
+  set(gca, 'fontsize', utils.fontSize)
 end
 
 function plot_learning_rate_vs_epoch(epoch, learningRates)
-  subplot(2,3,5)
+  figure(5);
 
-  plot(1:epoch, learningRates, '-ok', 'linewidth', 3)
+  plot(1:epoch, learningRates, '-k', 'linewidth', utils.linewidth, 'markersize', utils.markersize)
 
-  title('LearningRate vs epoch');
-  xlabel('Epoch');
-  ylabel('LearningRate');
+  title('Learning rate vs epoch', 'fontsize', utils.fontSize);
+  xlabel('Epoch', 'fontsize', utils.fontSize);
+  ylabel('Learning rate', 'fontsize', utils.fontSize);
+  set(gca, 'fontsize', utils.fontSize);
 end
 
-function plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalLayers)
-  subplot(2,3,6)
+function plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, beta)
+  figure(6);
 
   inputs = [trainingSet{1} ; testingSet{1}];
-  outputs = network_utils.forward_propagation(inputs, networkWeights, activation_func, betha);
-  netOutputs = outputs{columns(outputs)};
+  V = network_utils.forward_propagation(inputs, networkWeights, activation_func, beta);
+  networkOutputs = V{end};
+  originalOutputs = [trainingSet{2} ; testingSet{2}];
 
-  s = ones(length(netOutputs), 1) .* utils.sizeFactor; %size
-  c = netOutputs; % Color relative to height
+  hold off;
+  plot3(inputs(:,1), inputs(:,2), networkOutputs, '.b', 'markersize', utils.markersize) % Learned function
+  hold on;
+  plot3(inputs(:,1), inputs(:,2), originalOutputs, '.r', 'markersize', utils.markersize); % Original function
 
-  scatter3(inputs(:,1), inputs(:,2), netOutputs, s, c, 'filled');
+  legend('Original function', 'Learned function');
   axis([-1 1 -1 1 -1 1]);
-
-  title('Aproximated function');
-  xlabel('X');
-  ylabel('Y');
-  zlabel('Z');
+  title('Learned function', 'fontsize', utils.fontSize);
+  xlabel('X', 'fontsize', utils.fontSize);
+  ylabel('Y', 'fontsize', utils.fontSize);
+  zlabel('Z', 'fontsize', utils.fontSize);
+  set(gca, 'fontsize', utils.fontSize);
 end
 
 function output = normalize_x(A, a, b)

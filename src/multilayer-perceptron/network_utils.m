@@ -16,6 +16,13 @@ end
 
 function neuralValues = forward_propagation(inputs, networkWeights, activation_func, betha)
   totalEdgesLayers = columns(networkWeights); % Total connections between layers
+  if rows(inputs) == 0
+    for i = 1:totalEdgesLayers
+      neuralValues{i} = [];
+    end
+    return;
+  end
+
   totalInputs = rows(inputs);
   currentLayer = inputs;
 

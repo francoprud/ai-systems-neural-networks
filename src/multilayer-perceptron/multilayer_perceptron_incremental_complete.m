@@ -27,7 +27,6 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
 
   if (needsPlot)
     utils.plot_original_function(trainingSet, testingSet);
-    drawnow;
   end
 
   networkWeights = network_utils.randomize_network_weights([inputSize layersAndSize]);
@@ -82,7 +81,6 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
 
     % Calculating test error
     if (trainingPercentage != 1)
-      utils.plot_testing_set(testingSet, networkWeights, activation_func, betha);
       testError = network_utils.get_test_error(networkWeights, testingSet, activation_func, betha);
     else
       testError = 0;
@@ -115,30 +113,24 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
     end
 
     % Plots
-    if (mod(epoch, utils.step) == 0)
+    if (mod(epoch, utils.step) == 0 || currentError <= minimumError)
       percentageLearned = utils.calculate_errors(trainingSet, testingSet, networkWeights, activation_func, betha);
 
       if (needsPlot)
-        utils.plot_training_set(trainingSet{1}, V{totalLayers - 1});
-
-        utils.plot_error_vs_epoch(epoch, trainingErrors, testingErrors);
-    
+        utils.plot_training_set(trainingSet, V{end});
+        utils.plot_testing_set(testingSet, networkWeights, activation_func, betha);
+        plotTestError = !(trainingPercentage == 1);
+        utils.plot_error_vs_epoch(epoch, trainingErrors, testingErrors, plotTestError);
         utils.plot_learning_rate_vs_epoch(epoch, learningRates);
-
-        utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha, totalEdgesLayers);
+        utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha);
         drawnow;
-
-        printf('epocas = %d; currentError = %g; currentMinimumError = %g; testError = %g; currentMinimumTestError = %g; percentageLearned = %g\n', epoch, currentError, currentMinimumError, testError, currentMinimumTestError, percentageLearned);
-      else
-        printf('epocas = %d; currentError = %g; currentMinimumError = %g; percentageLearned = %g\n', epoch, currentError, currentMinimumError, percentageLearned);
       end
-
+      
+      printf('epocas = %d; currentError = %g; currentMinimumError = %g; testError = %g; currentMinimumTestError = %g; percentageLearned = %g\n', epoch, currentError, currentMinimumError, testError, currentMinimumTestError, percentageLearned);
       fflush(stdout);
-    end
+    end  
   end
 
-  printf('epocas = %d; currentError = %g; currentMinimumError = %g\n', epoch, currentError, currentMinimumError);
-  fflush(stdout);
-
   output = networkWeights;
+
 end
