@@ -5,7 +5,7 @@ function utils = utils()
 
   utils.get_activation_funs = @get_activation_funs;
   utils.sizeFactor = 15;
-  utils.step = 10;
+  utils.step = 1;
   utils.fontSize = 15;
   utils.markersize = 10;
   utils.linewidth = 3;
@@ -76,7 +76,7 @@ function randomSubsetOutput = get_random_subset(matrix, percentage)
   randomSubsetOutput{2}{2} = matrix(rowsOrder((mustExtract + 1):matrixRows), 3);
 end
 
-function plot_original_function(trainingSet, testingSet)
+function plot_original_function(trainingSet, testingSet, activationFunsId)
   figure(1);
 
   inputs = [trainingSet{1} ; testingSet{1}];
@@ -84,7 +84,14 @@ function plot_original_function(trainingSet, testingSet)
   
   plot3(inputs(:,1), inputs(:,2), outputs, '.b', 'markersize', utils.markersize)
 
-  axis([-1 1 -1 1 -1 1]);
+  switch activationFunsId
+    case 1
+      % Tangente hiperbolica
+      axis([-1 1 -1 1 -1 1]);
+    case 2
+      % Exponencial
+      axis([-1 1 -1 1 0 1]);
+  end
   title('Original function', 'fontsize', utils.fontSize);
   xlabel('X', 'fontsize', utils.fontSize);
   ylabel('Y', 'fontsize', utils.fontSize);
@@ -92,12 +99,19 @@ function plot_original_function(trainingSet, testingSet)
   set(gca, 'fontsize', utils.fontSize);
 end
 
-function plot_training_set(trainingSet, networkOutputs)
+function plot_training_set(trainingSet, networkOutputs, activationFunsId)
   figure(2);
 
   plot3(trainingSet{1}(:,1), trainingSet{1}(:,2), networkOutputs, '.r', 'markersize', utils.markersize)
 
-  axis([-1 1 -1 1 -1 1]);
+  switch activationFunsId
+    case 1
+      % Tangente hiperbolica
+      axis([-1 1 -1 1 -1 1]);
+    case 2
+      % Exponencial
+      axis([-1 1 -1 1 0 1]);
+  end
   title('Patterns (X, Y) vs learned Z', 'fontsize', utils.fontSize);
   xlabel('X', 'fontsize', utils.fontSize);
   ylabel('Y', 'fontsize', utils.fontSize);
@@ -113,12 +127,19 @@ function plot_testing_set(testingSet, networkWeights, activation_func, betha)
   figure(3);
 
   inputs = testingSet{1};
-  outputs = network_utils.forward_propagation(inputs, networkWeights, activation_func, betha);
+  outputs = network_utils.forward_propagation(inputs, networkWeights, activationFunsId, activation_func, betha);
   netOutputs = outputs{columns(outputs)};
 
   plot3(inputs(:,1), inputs(:,2), netOutputs, '.r', 'markersize', utils.markersize)
 
-  axis([-1 1 -1 1 -1 1]);
+  switch activationFunsId
+    case 1
+      % Tangente hiperbolica
+      axis([-1 1 -1 1 -1 1]);
+    case 2
+      % Exponencial
+      axis([-1 1 -1 1 0 1]);
+  end
   title('Testing patterns (X, Y) vs learned Z', 'fontsize', utils.fontSize);
   xlabel('X', 'fontsize', utils.fontSize);
   ylabel('Y', 'fontsize', utils.fontSize);
@@ -153,7 +174,7 @@ function plot_learning_rate_vs_epoch(epoch, learningRates)
   set(gca, 'fontsize', utils.fontSize);
 end
 
-function plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, beta)
+function plot_aproximated_function(networkWeights, trainingSet, testingSet, activationFunsId, activation_func, beta)
   figure(6);
 
   inputs = [trainingSet{1} ; testingSet{1}];
@@ -162,12 +183,19 @@ function plot_aproximated_function(networkWeights, trainingSet, testingSet, acti
   originalOutputs = [trainingSet{2} ; testingSet{2}];
 
   hold off;
-  plot3(inputs(:,1), inputs(:,2), networkOutputs, '.b', 'markersize', utils.markersize) % Learned function
+  plot3(inputs(:,1), inputs(:,2), networkOutputs, '.r', 'markersize', utils.markersize) % Learned function
   hold on;
-  plot3(inputs(:,1), inputs(:,2), originalOutputs, '.r', 'markersize', utils.markersize); % Original function
+  plot3(inputs(:,1), inputs(:,2), originalOutputs, '.b', 'markersize', utils.markersize); % Original function
 
-  legend('Original function', 'Learned function');
-  axis([-1 1 -1 1 -1 1]);
+  switch activationFunsId
+    case 1
+      % Tangente hiperbolica
+      axis([-1 1 -1 1 -1 1]);
+    case 2
+      % Exponencial
+      axis([-1 1 -1 1 0 1]);
+  end
+  legend('Learned function', 'Original function');
   title('Learned function', 'fontsize', utils.fontSize);
   xlabel('X', 'fontsize', utils.fontSize);
   ylabel('Y', 'fontsize', utils.fontSize);
@@ -205,8 +233,15 @@ function denormalizedOutput = denormalize_x(A, B)
   end
 end
 
-function calculateErrorsOutput = calculate_errors(trainingSet, testingSet, networkWeights, activation_func, betha)
-  delta = 0.1;
+function calculateErrorsOutput = calculate_errors(trainingSet, testingSet, networkWeights, activationFunsId, activation_func, betha)
+  switch activationFunsId
+    case 1
+      % Tangente hiperbolica
+      delta = 0.1;
+    case 2
+      % Exponencial
+      delta = 0.05;
+  end
   inputs = [trainingSet{1}; testingSet{1}];
   outputs = network_utils.forward_propagation(inputs, networkWeights, activation_func, betha);
   expectedOutputs = [trainingSet{2}; testingSet{2}];

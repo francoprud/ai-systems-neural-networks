@@ -7,7 +7,7 @@
 % activation_func:
 % activation_func_derived:
 % betha:
-function output = multilayer_perceptron_incremental_complete(trainingSet, testingSet, needsPlot, trainingPercentage, layersAndSize, minimumError, learningRate, activation_func, activation_func_derived, betha, alpha, adaptativeA, adaptativeB, kEpochs)
+function output = multilayer_perceptron_incremental_complete(trainingSet, testingSet, needsPlot, trainingPercentage, layersAndSize, minimumError, learningRate, activationFunsId, activation_func, activation_func_derived, betha, alpha, adaptativeA, adaptativeB, kEpochs)
   totalInputs = rows(trainingSet{1});
   totalOutputs = rows(trainingSet{2});
   inputSize = columns(trainingSet{1});
@@ -26,7 +26,7 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
   end
 
   if (needsPlot)
-    utils.plot_original_function(trainingSet, testingSet);
+    utils.plot_original_function(trainingSet, testingSet, activationFunsId);
   end
 
   networkWeights = network_utils.randomize_network_weights([inputSize layersAndSize]);
@@ -91,17 +91,17 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
       currentMinimumTestError = testError;
     end
 
-    epoch++;
-    learningRates(end+1) = learningRate;
-    trainingErrors(end+1) = currentError;
-    testingErrors(end+1) = testError;
-
     if (adaptativeA != 0 || adaptativeB != 0)
       if (currentError - previousError < 0)
         alphaValue = alpha;
         counter++;
         if (counter >= kEpochs)
+          previousError
+          currentError
+          learningRate
           learningRate += adaptativeA;
+          learningRate
+          epoch
         end
       else
         alphaValue = 0;
@@ -112,17 +112,22 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
       end
     end
 
+    epoch++;
+    learningRates(end+1) = learningRate;
+    trainingErrors(end+1) = currentError;
+    testingErrors(end+1) = testError;
+
     % Plots
     if (mod(epoch, utils.step) == 0 || currentError <= minimumError)
-      percentageLearned = utils.calculate_errors(trainingSet, testingSet, networkWeights, activation_func, betha);
+      percentageLearned = utils.calculate_errors(trainingSet, testingSet, networkWeights, activationFunsId, activation_func, betha);
 
       if (needsPlot)
-        utils.plot_training_set(trainingSet, V{end});
-        utils.plot_testing_set(testingSet, networkWeights, activation_func, betha);
+        utils.plot_training_set(trainingSet, V{end}, activationFunsId);
+        utils.plot_testing_set(testingSet, networkWeights, activationFunsId, activation_func, betha);
         plotTestError = !(trainingPercentage == 1);
         utils.plot_error_vs_epoch(epoch, trainingErrors, testingErrors, plotTestError);
         utils.plot_learning_rate_vs_epoch(epoch, learningRates);
-        utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activation_func, betha);
+        utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activationFunsId, activation_func, betha);
         drawnow;
       end
       
