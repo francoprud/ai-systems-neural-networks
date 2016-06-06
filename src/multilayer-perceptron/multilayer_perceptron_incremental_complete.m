@@ -19,6 +19,8 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
   trainingErrors = [];
   testingErrors = [];
   learningRates = [];
+  percentagesLearned = [];
+  adaptativeEtaEnabled = adaptativeA != 0 || adaptativeB != 0;
 
   if (totalInputs != totalOutputs)
     printf('The training set is invalid.\n');
@@ -91,17 +93,12 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
       currentMinimumTestError = testError;
     end
 
-    if (adaptativeA != 0 || adaptativeB != 0)
-      if (currentError - previousError < 0)
+    if (adaptativeEtaEnabled)
+      if (currentError - previousError < -10^-6)
         alphaValue = alpha;
         counter++;
         if (counter >= kEpochs)
-          previousError
-          currentError
-          learningRate
           learningRate += adaptativeA;
-          learningRate
-          epoch
         end
       else
         alphaValue = 0;
@@ -117,21 +114,25 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
     trainingErrors(end+1) = currentError;
     testingErrors(end+1) = testError;
 
+    percentagesLearned(end+1) = utils.calculate_errors(trainingSet, testingSet, networkWeights, activationFunsId, activation_func, betha);
+
     % Plots
     if (mod(epoch, utils.step) == 0 || currentError <= minimumError)
-      percentageLearned = utils.calculate_errors(trainingSet, testingSet, networkWeights, activationFunsId, activation_func, betha);
 
       if (needsPlot)
         utils.plot_training_set(trainingSet, V{end}, activationFunsId);
         utils.plot_testing_set(testingSet, networkWeights, activationFunsId, activation_func, betha);
         plotTestError = !(trainingPercentage == 1);
         utils.plot_error_vs_epoch(epoch, trainingErrors, testingErrors, plotTestError);
-        utils.plot_learning_rate_vs_epoch(epoch, learningRates);
         utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activationFunsId, activation_func, betha);
+        utils.plot_percentagesLearned(percentagesLearned, epoch)
+        if (adaptativeEtaEnabled)
+          utils.plot_learning_rate_vs_epoch(epoch, learningRates);
+        end
         drawnow;
       end
       
-      printf('epocas = %d; currentError = %g; currentMinimumError = %g; testError = %g; currentMinimumTestError = %g; percentageLearned = %g\n', epoch, currentError, currentMinimumError, testError, currentMinimumTestError, percentageLearned);
+      printf('epocas = %d; currentError = %g; currentMinimumError = %g; testError = %g; currentMinimumTestError = %g; percentageLearned = %g\n', epoch, currentError, currentMinimumError, testError, currentMinimumTestError, percentagesLearned(epoch));
       fflush(stdout);
     end  
   end

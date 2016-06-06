@@ -6,7 +6,7 @@ function utils = utils()
   utils.get_activation_funs = @get_activation_funs;
   utils.sizeFactor = 15;
   utils.step = 1;
-  utils.fontSize = 15;
+  utils.fontSize = 20;
   utils.markersize = 10;
   utils.linewidth = 3;
   utils.plot_original_function = @plot_original_function;
@@ -15,6 +15,7 @@ function utils = utils()
   utils.plot_learning_rate_vs_epoch = @plot_learning_rate_vs_epoch;
   utils.plot_aproximated_function = @plot_aproximated_function;
   utils.plot_testing_set = @plot_testing_set;
+  utils.plot_percentagesLearned = @plot_percentagesLearned;
 
   utils.normalize_x = @normalize_x;
   utils.denormalize_x = @denormalize_x;
@@ -203,6 +204,17 @@ function plot_aproximated_function(networkWeights, trainingSet, testingSet, acti
   set(gca, 'fontsize', utils.fontSize);
 end
 
+function plot_percentagesLearned(percentagesLearned, epoch)
+  figure(7);
+
+  plot(1:epoch, percentagesLearned, '-k')
+
+  title('Percentages learned vs epoch', 'fontsize', utils.fontSize);
+  xlabel('Epoch', 'fontsize', utils.fontSize);
+  ylabel('Percentage learned', 'fontsize', utils.fontSize);
+  set(gca, 'fontsize', utils.fontSize);
+end
+
 function output = normalize_x(A, a, b)
   maximum = max(A);
   minimum = min(A);
@@ -237,10 +249,10 @@ function calculateErrorsOutput = calculate_errors(trainingSet, testingSet, netwo
   switch activationFunsId
     case 1
       % Tangente hiperbolica
-      delta = 0.1;
+      delta = 0.02;
     case 2
       % Exponencial
-      delta = 0.05;
+      delta = 0.01;
   end
   inputs = [trainingSet{1}; testingSet{1}];
   outputs = network_utils.forward_propagation(inputs, networkWeights, activation_func, betha);
