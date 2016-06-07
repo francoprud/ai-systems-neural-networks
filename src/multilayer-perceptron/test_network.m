@@ -58,7 +58,9 @@ function withTerrainOutput = with_terrain(filePath, trainingPercentage, layersAn
   % Won't define trainingSetNormalizedWithDenormalizationVectors{1}{2} because it's not necessary
   trainingSetNormalizedWithDenormalizationVectors{2} = utils.normalize_x(trainingSet{2}, outputMinNorm, outputMaxNorm);
 
-  trainingSetNormalized{1} = trainingSetNormalizedWithDenormalizationVectors{1}{1};
+  % the following commented line is to have denormalized patterns
+  %trainingSetNormalized{1} = trainingSetNormalizedWithDenormalizationVectors{1}{1};
+  trainingSetNormalized{1} = trainingSet{1};
   trainingSetNormalized{2} = trainingSetNormalizedWithDenormalizationVectors{2}{1};
 
   % This line is just to declare it. it will have a different value later. not sure if it's necessary.
@@ -83,7 +85,9 @@ function withTerrainOutput = with_terrain(filePath, trainingPercentage, layersAn
   end
 
   % This works just like trainingSetNormalized
-  testingSetNormalized{1} = testingSetNormalizedWithDenormalizationVectors{1}{1};
+  % the following commented line is to have denormalized patterns
+  %testingSetNormalized{1} = testingSetNormalizedWithDenormalizationVectors{1}{1};
+  testingSetNormalized{1} = testingSet{1};
   testingSetNormalized{2} = testingSetNormalizedWithDenormalizationVectors{2}{1};
 
   dataSetsNormalized{1} = trainingSetNormalized;

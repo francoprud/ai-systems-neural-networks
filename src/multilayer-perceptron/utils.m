@@ -25,8 +25,8 @@ function utils = utils()
 end
 
 function axisOutput = get_axis_values(dataset)
-  totalSet{1} = [dataset{1}{1} dataset{2}{1}];
-  totalSet{2} = [dataset{1}{2} dataset{2}{2}];
+  totalSet{1} = [dataset{1}{1}; dataset{2}{1}];
+  totalSet{2} = [dataset{1}{2}; dataset{2}{2}];
 
   minX = min(totalSet{1}(:, 1));
   maxX = max(totalSet{1}(:, 1));
