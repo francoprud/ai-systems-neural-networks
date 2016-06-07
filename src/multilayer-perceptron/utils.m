@@ -214,6 +214,7 @@ end
 function denormalizedOutput = denormalize_x(A, B)
   if (rows(A) == 0)
     denormalizedOutput = [];
+    return;
   end
   transpose_after = false;
   Ap = A;
