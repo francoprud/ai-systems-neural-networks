@@ -20,6 +20,7 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
   testingErrors = [];
   learningRates = [];
   percentagesLearned = [];
+  minimumErrorPercentageLearned = 0;
   adaptativeEtaEnabled = adaptativeA != 0 || adaptativeB != 0;
 
   if (totalInputs != totalOutputs)
@@ -76,23 +77,6 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
     previousError = currentError;
     currentError = network_utils.calculate_error(trainingSet{2}, V{totalLayers - 1});
 
-    % Updating minimum training error
-    if (currentError < currentMinimumError)
-      currentMinimumError = currentError;
-    end
-
-    % Calculating test error
-    if (trainingPercentage != 1)
-      testError = network_utils.get_test_error(networkWeights, testingSet, activation_func, betha);
-    else
-      testError = 0;
-    end
-
-    % Updating minimum test error
-    if (currentMinimumTestError > testError)
-      currentMinimumTestError = testError;
-    end
-
     if (adaptativeEtaEnabled)
       if (currentError - previousError < -10^-6)
         alphaValue = alpha;
@@ -110,11 +94,30 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
     end
 
     epoch++;
+
+    percentagesLearned(end+1) = utils.calculate_errors(trainingSet, testingSet, networkWeights, activationFunsId, activation_func, betha);
+    
+    % Updating minimum training error
+    if (currentError < currentMinimumError)
+      currentMinimumError = currentError;
+      minimumErrorPercentageLearned = percentagesLearned(epoch);
+    end
+
+    % Calculating test error
+    if (trainingPercentage != 1)
+      testError = network_utils.get_test_error(networkWeights, testingSet, activation_func, betha);
+    else
+      testError = 0;
+    end
+
+    % Updating minimum test error
+    if (currentMinimumTestError > testError)
+      currentMinimumTestError = testError;
+    end
+
     learningRates(end+1) = learningRate;
     trainingErrors(end+1) = currentError;
     testingErrors(end+1) = testError;
-
-    percentagesLearned(end+1) = utils.calculate_errors(trainingSet, testingSet, networkWeights, activationFunsId, activation_func, betha);
 
     % Plots
     if (mod(epoch, utils.step) == 0 || currentError <= minimumError)
@@ -132,7 +135,7 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
         drawnow;
       end
       
-      printf('epocas = %d; currentError = %g; currentMinimumError = %g; testError = %g; currentMinimumTestError = %g; percentageLearned = %g\n', epoch, currentError, currentMinimumError, testError, currentMinimumTestError, percentagesLearned(epoch));
+      printf('epocas = %d; currentError = %g; currentMinimumError = %g; testError = %g; currentMinimumTestError = %g; percentageLearned = %g; minimumErrorPercentageLearned: %g\n', epoch, currentError, currentMinimumError, testError, currentMinimumTestError, percentagesLearned(epoch), minimumErrorPercentageLearned);
       fflush(stdout);
     end  
   end
