@@ -85,7 +85,11 @@ function withTerrainOutput = with_terrain(filePath, trainingPercentage, layersAn
   % This works just like trainingSetNormalized
   testingSetNormalized{1} = testingSetNormalizedWithDenormalizationVectors{1}{1};
   testingSetNormalized{2} = testingSetNormalizedWithDenormalizationVectors{2}{1};
-  networkWeights = multilayer_perceptron_incremental_complete(trainingSetNormalized, testingSetNormalized, needPlots, trainingPercentage, layersAndSize, minimumError, learningRate, activationFunsId, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs);
+
+  dataSetsNormalized{1} = trainingSetNormalized;
+  dataSetsNormalized{2} = testingSetNormalized;
+
+  networkWeights = multilayer_perceptron_incremental_complete(trainingSetNormalized, testingSetNormalized, utils.get_axis_values(dataSetsNormalized), needPlots, trainingPercentage, layersAndSize, minimumError, learningRate, activationFunsId, activationFunc, activationFuncDerived, betha, alpha, adaptativeA, adaptativeB, kEpochs);
 
   % No hace falta desnormalizar la entrada porque ya la tengo desnormalizada en trainingSet
   % para la salida necesito recuperar el vector de desnormalizacion

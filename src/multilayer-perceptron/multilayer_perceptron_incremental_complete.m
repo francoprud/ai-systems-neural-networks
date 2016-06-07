@@ -7,7 +7,7 @@
 % activation_func:
 % activation_func_derived:
 % betha:
-function output = multilayer_perceptron_incremental_complete(trainingSet, testingSet, needsPlot, trainingPercentage, layersAndSize, minimumError, learningRate, activationFunsId, activation_func, activation_func_derived, betha, alpha, adaptativeA, adaptativeB, kEpochs)
+function output = multilayer_perceptron_incremental_complete(trainingSet, testingSet, axisValues, needsPlot, trainingPercentage, layersAndSize, minimumError, learningRate, activationFunsId, activation_func, activation_func_derived, betha, alpha, adaptativeA, adaptativeB, kEpochs)
   totalInputs = rows(trainingSet{1});
   totalOutputs = rows(trainingSet{2});
   inputSize = columns(trainingSet{1});
@@ -28,7 +28,7 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
   end
 
   if (needsPlot)
-    utils.plot_original_function(trainingSet, testingSet, activationFunsId);
+    utils.plot_original_function(trainingSet, testingSet, axisValues);
   end
 
   networkWeights = network_utils.randomize_network_weights([inputSize layersAndSize]);
@@ -120,11 +120,11 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
     if (mod(epoch, utils.step) == 0 || currentError <= minimumError)
 
       if (needsPlot)
-        utils.plot_training_set(trainingSet, V{end}, activationFunsId);
-        utils.plot_testing_set(testingSet, networkWeights, activationFunsId, activation_func, betha);
+        utils.plot_training_set(trainingSet, V{end}, axisValues);
+        utils.plot_testing_set(testingSet, networkWeights, axisValues, activation_func, betha);
         plotTestError = !(trainingPercentage == 1);
         utils.plot_error_vs_epoch(epoch, trainingErrors, testingErrors, plotTestError);
-        utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, activationFunsId, activation_func, betha);
+        utils.plot_aproximated_function(networkWeights, trainingSet, testingSet, axisValues, activation_func, betha);
         utils.plot_percentagesLearned(percentagesLearned, epoch)
         if (adaptativeEtaEnabled)
           utils.plot_learning_rate_vs_epoch(epoch, learningRates);

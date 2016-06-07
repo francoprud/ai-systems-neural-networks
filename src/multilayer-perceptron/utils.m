@@ -3,6 +3,7 @@ function utils = utils()
   utils.get_training_set = @get_training_set;
   utils.get_random_subset = @get_random_subset;
 
+  utils.get_axis_values = @get_axis_values;
   utils.get_activation_funs = @get_activation_funs;
   utils.sizeFactor = 15;
   utils.step = 1;
@@ -21,6 +22,22 @@ function utils = utils()
   utils.denormalize_x = @denormalize_x;
 
   utils.calculate_errors = @calculate_errors;
+end
+
+function axisOutput = get_axis_values(dataset)
+  totalSet{1} = [dataset{1}{1} dataset{2}{1}];
+  totalSet{2} = [dataset{1}{2} dataset{2}{2}];
+
+  minX = min(totalSet{1}(:, 1));
+  maxX = max(totalSet{1}(:, 1));
+
+  minY = min(totalSet{1}(:, 2));
+  maxY = max(totalSet{1}(:, 2));
+
+  minZ = min(totalSet{2});
+  maxZ = max(totalSet{2});
+
+  axisOutput = [floor(minX) ceil(maxX) floor(minY) ceil(maxY) floor(minZ) ceil(maxZ)];
 end
 
 function funs = get_activation_funs(x)
@@ -77,22 +94,14 @@ function randomSubsetOutput = get_random_subset(matrix, percentage)
   randomSubsetOutput{2}{2} = matrix(rowsOrder((mustExtract + 1):matrixRows), 3);
 end
 
-function plot_original_function(trainingSet, testingSet, activationFunsId)
+function plot_original_function(trainingSet, testingSet, axisValues)
   figure(1);
 
   inputs = [trainingSet{1} ; testingSet{1}];
   outputs = [trainingSet{2} ; testingSet{2}];
   
   plot3(inputs(:,1), inputs(:,2), outputs, '.b', 'markersize', utils.markersize)
-
-  switch activationFunsId
-    case 1
-      % Tangente hiperbolica
-      axis([-1 1 -1 1 -1 1]);
-    case 2
-      % Exponencial
-      axis([-1 1 -1 1 0 1]);
-  end
+  axis(axisValues);
   title('Original function', 'fontsize', utils.fontSize);
   xlabel('X', 'fontsize', utils.fontSize);
   ylabel('Y', 'fontsize', utils.fontSize);
@@ -100,19 +109,11 @@ function plot_original_function(trainingSet, testingSet, activationFunsId)
   set(gca, 'fontsize', utils.fontSize);
 end
 
-function plot_training_set(trainingSet, networkOutputs, activationFunsId)
+function plot_training_set(trainingSet, networkOutputs, axisValues)
   figure(2);
 
   plot3(trainingSet{1}(:,1), trainingSet{1}(:,2), networkOutputs, '.r', 'markersize', utils.markersize)
-
-  switch activationFunsId
-    case 1
-      % Tangente hiperbolica
-      axis([-1 1 -1 1 -1 1]);
-    case 2
-      % Exponencial
-      axis([-1 1 -1 1 0 1]);
-  end
+  axis(axisValues);
   title('Patterns (X, Y) vs learned Z', 'fontsize', utils.fontSize);
   xlabel('X', 'fontsize', utils.fontSize);
   ylabel('Y', 'fontsize', utils.fontSize);
@@ -120,7 +121,7 @@ function plot_training_set(trainingSet, networkOutputs, activationFunsId)
   set(gca, 'fontsize', utils.fontSize);
 end
 
-function plot_testing_set(testingSet, networkWeights, activation_func, betha)
+function plot_testing_set(testingSet, networkWeights, axisValues, activation_func, betha)
   if (rows(testingSet{1}) == 0)
     return;
   end
@@ -128,19 +129,11 @@ function plot_testing_set(testingSet, networkWeights, activation_func, betha)
   figure(3);
 
   inputs = testingSet{1};
-  outputs = network_utils.forward_propagation(inputs, networkWeights, activationFunsId, activation_func, betha);
+  outputs = network_utils.forward_propagation(inputs, networkWeights, activation_func, betha);
   netOutputs = outputs{columns(outputs)};
 
   plot3(inputs(:,1), inputs(:,2), netOutputs, '.r', 'markersize', utils.markersize)
-
-  switch activationFunsId
-    case 1
-      % Tangente hiperbolica
-      axis([-1 1 -1 1 -1 1]);
-    case 2
-      % Exponencial
-      axis([-1 1 -1 1 0 1]);
-  end
+  axis(axisValues);
   title('Testing patterns (X, Y) vs learned Z', 'fontsize', utils.fontSize);
   xlabel('X', 'fontsize', utils.fontSize);
   ylabel('Y', 'fontsize', utils.fontSize);
@@ -175,7 +168,7 @@ function plot_learning_rate_vs_epoch(epoch, learningRates)
   set(gca, 'fontsize', utils.fontSize);
 end
 
-function plot_aproximated_function(networkWeights, trainingSet, testingSet, activationFunsId, activation_func, beta)
+function plot_aproximated_function(networkWeights, trainingSet, testingSet, axisValues, activation_func, beta)
   figure(6);
 
   inputs = [trainingSet{1} ; testingSet{1}];
@@ -187,15 +180,7 @@ function plot_aproximated_function(networkWeights, trainingSet, testingSet, acti
   plot3(inputs(:,1), inputs(:,2), networkOutputs, '.r', 'markersize', utils.markersize) % Learned function
   hold on;
   plot3(inputs(:,1), inputs(:,2), originalOutputs, '.b', 'markersize', utils.markersize); % Original function
-
-  switch activationFunsId
-    case 1
-      % Tangente hiperbolica
-      axis([-1 1 -1 1 -1 1]);
-    case 2
-      % Exponencial
-      axis([-1 1 -1 1 0 1]);
-  end
+  axis(axisValues);
   legend('Learned function', 'Original function');
   title('Learned function', 'fontsize', utils.fontSize);
   xlabel('X', 'fontsize', utils.fontSize);
