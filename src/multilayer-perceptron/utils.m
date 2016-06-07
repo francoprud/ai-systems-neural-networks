@@ -6,7 +6,7 @@ function utils = utils()
   utils.get_axis_values = @get_axis_values;
   utils.get_activation_funs = @get_activation_funs;
   utils.sizeFactor = 15;
-  utils.step = 1;
+  utils.step = 100;
   utils.fontSize = 20;
   utils.markersize = 10;
   utils.linewidth = 3;
@@ -145,10 +145,10 @@ function plot_error_vs_epoch(epoch, trainingErrors, testingErrors, plotTestError
   figure(4);
 
   if (plotTestError)
-    plot(1:epoch, trainingErrors, '-k', 'linewidth', utils.linewidth, 'markersize', utils.markersize, 1:epoch, testingErrors, '-r', 'linewidth', utils.linewidth, 'markersize', utils.markersize)
+    plot(1:epoch, trainingErrors, '-k', 'linewidth', utils.linewidth, 1:epoch, testingErrors, '-r', 'linewidth', utils.linewidth)
     title('Training error and testing error', 'fontsize', utils.fontSize);
   else
-    plot(1:epoch, trainingErrors, '-k', 'linewidth', utils.linewidth, 'markersize', utils.markersize)
+    plot(1:epoch, trainingErrors, '-k', 'linewidth', utils.linewidth)
     title('Training error', 'fontsize', utils.fontSize);
   end
 
@@ -160,7 +160,7 @@ end
 function plot_learning_rate_vs_epoch(epoch, learningRates)
   figure(5);
 
-  plot(1:epoch, learningRates, '-k', 'linewidth', utils.linewidth, 'markersize', utils.markersize)
+  plot(1:epoch, learningRates, '-k', 'linewidth', utils.linewidth)
 
   title('Learning rate vs epoch', 'fontsize', utils.fontSize);
   xlabel('Epoch', 'fontsize', utils.fontSize);
@@ -212,6 +212,9 @@ function output = normalize_x(A, a, b)
 end
 
 function denormalizedOutput = denormalize_x(A, B)
+  if (rows(A) == 0)
+    denormalizedOutput = [];
+  end
   transpose_after = false;
   Ap = A;
   if (columns(A) == 1)
