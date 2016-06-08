@@ -78,7 +78,7 @@ function output = multilayer_perceptron_incremental_complete(trainingSet, testin
     currentError = network_utils.calculate_error(trainingSet{2}, V{totalLayers - 1});
 
     if (adaptativeEtaEnabled)
-      if (currentError - previousError < -10^-6)
+      if (currentError - previousError < 0)
         alphaValue = alpha;
         counter++;
         if (counter >= kEpochs)

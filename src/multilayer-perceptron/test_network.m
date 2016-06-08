@@ -120,4 +120,7 @@ function withTerrainOutput = with_terrain(filePath, trainingPercentage, layersAn
   utils.print_ovito_file(fid, totalSet, '0 0 1');
 
   fclose(fid);
+
+  withTerrainOutput = networkWeights
+  
 end
