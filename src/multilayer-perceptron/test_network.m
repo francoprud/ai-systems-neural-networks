@@ -54,7 +54,7 @@ function withTerrainOutput = with_terrain(filePath, trainingPercentage, layersAn
   trainingSetPatternsXNormalized = utils.normalize_x(trainingSet{1}(:, 1), patternsMinNorm, patternsMaxNorm){1};
   trainingSetPatternsYNormalized = utils.normalize_x(trainingSet{1}(:, 2), patternsMinNorm, patternsMaxNorm){1};
   trainingSetNormalizedWithDenormalizationVectors{1}{1} = [trainingSetPatternsXNormalized trainingSetPatternsYNormalized];
-  
+
   % Won't define trainingSetNormalizedWithDenormalizationVectors{1}{2} because it's not necessary
   trainingSetNormalizedWithDenormalizationVectors{2} = utils.normalize_x(trainingSet{2}, outputMinNorm, outputMaxNorm);
 
@@ -111,13 +111,13 @@ function withTerrainOutput = with_terrain(filePath, trainingPercentage, layersAn
   outputSet{2} = [outputTrainingSet{2} ; outputTestingSet{2}];
 
   fid = fopen('../../doc/data/result.txt', 'w+');
-  fprintf(fid, '%d\n\n', rows(outputSet{1}));
+  fprintf(fid, '%d\n\n', rows(outputSet{1}) * 2);
 
-  for i = 1:rows(outputSet{1})
-    result = [outputSet{1}(i, :) outputSet{2}(i, :)];
+  utils.print_ovito_file(fid, outputSet, '1 0 0');
 
-    fprintf(fid, '%g ', result);
-    fprintf(fid, '\n');
-  end
+  totalSet{1} = [dataSets{1}{1}; dataSets{2}{1}];
+  totalSet{2} = [dataSets{1}{2}; dataSets{2}{2}];
+  utils.print_ovito_file(fid, totalSet, '0 0 1');
+
   fclose(fid);
 end

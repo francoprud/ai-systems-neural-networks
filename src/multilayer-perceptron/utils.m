@@ -18,6 +18,8 @@ function utils = utils()
   utils.plot_testing_set = @plot_testing_set;
   utils.plot_percentagesLearned = @plot_percentagesLearned;
 
+  utils.print_ovito_file = @print_ovito_file;
+
   utils.normalize_x = @normalize_x;
   utils.denormalize_x = @denormalize_x;
 
@@ -99,7 +101,7 @@ function plot_original_function(trainingSet, testingSet, axisValues)
 
   inputs = [trainingSet{1} ; testingSet{1}];
   outputs = [trainingSet{2} ; testingSet{2}];
-  
+
   plot3(inputs(:,1), inputs(:,2), outputs, '.b', 'markersize', utils.markersize)
   axis(axisValues);
   title('Original function', 'fontsize', utils.fontSize);
@@ -250,4 +252,13 @@ function calculateErrorsOutput = calculate_errors(trainingSet, testingSet, netwo
   result = abs(expectedOutputs - outputs{columns(networkWeights)}) <= delta;
 
   calculateErrorsOutput = sum(result) / rows(inputs);
+end
+
+function print_ovito_file(fid, dataSet, rgbColor)
+  for i = 1:rows(dataSet{1})
+    result = [dataSet{1}(i, :) dataSet{2}(i)];
+
+    fprintf(fid, '%g %g %g %s', result(1), result(2), result(3), rgbColor);
+    fprintf(fid, '\n');
+  end
 end
