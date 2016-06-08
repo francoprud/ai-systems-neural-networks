@@ -1,5 +1,9 @@
 # Multilayer Perceptron
 
+Change directory from the root of the project to ./src/multilayer-perceptron.
+
+***To speed up the using of the network you can change the function params from the `run.m` file and then execute in octave `run`.***
+
 The Neural Newtork can be executed with two methods:
 
 ### `test_network.with_function`
